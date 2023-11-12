@@ -1,0 +1,11 @@
+name: gramps
+help: Pseudo-offline encrypted backup tool
+version: 0.1.0
+
+commands:
+  - name: init
+    help: Generate a key pair and display the private key
+    args:
+      - name: directory_path
+        required: true
+        help: Location where you want to save your data
