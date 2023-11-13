@@ -167,6 +167,19 @@ gramps_init_command() {
   test ! -f "${readme_path}" || echo "WARNING: README.md already exists"
   touch "${readme_path}"
 
+  private_key="$(
+      age-keygen 2> /dev/null | grep --perl-regexp --only-matching '(?<=^AGE-SECRET-KEY-1).+$'
+  )"
+
+  echo "AGE-SECRET-KEY-1${private_key}" | age-keygen -y > "${pubkey_path}"
+
+  echo "Here is your private key. Write it down. You will need it to decrypt"
+  echo "files, however it will never be displayed again after this:"
+  echo
+  echo "  ${private_key:0:5} ${private_key:5:5} ${private_key:10:5} ${private_key:15:5}"
+  echo "  ${private_key:20:5} ${private_key:25:5} ${private_key:30:5} ${private_key:35:5}"
+  echo "  ${private_key:40:5} ${private_key:45:5} ${private_key:50:5} ${private_key:55:3}"
+
 }
 
 # :command.parse_requirements

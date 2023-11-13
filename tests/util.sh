@@ -5,6 +5,7 @@ setup() {
     TEST_CWD="$(mktemp --directory --tmpdir=/tmp gramps-test.XXXXXX)"
     TEST_HOME="$(mktemp --directory --tmpdir=/tmp gramps-home.XXXXXX)"
     cp gramps "${TEST_CWD}"
+    cp .tool-versions "${TEST_CWD}"
     cd "${TEST_CWD}"
     export HOME="${TEST_HOME}"
 }
