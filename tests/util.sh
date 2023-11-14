@@ -41,3 +41,22 @@ capture_exit_code() {
         TEST_EXIT_CODE=$?
     fi
 }
+
+assert_exit_code() {
+    test "${TEST_EXIT_CODE}" -eq "${1}" \
+        || fail "Expected exit code ${1}; got ${TEST_EXIT_CODE}"
+}
+
+assert_stdout() {
+    if ! [[ "${TEST_STDOUT}" =~ ${1} ]]; then
+        printf "******STDOUT:******\n%s\n*******************\n" "${TEST_STDOUT}"
+        fail "stdout didn't match expected."
+    fi
+}
+
+assert_stderr() {
+    if ! [[ "${TEST_STDERR}" =~ ${1} ]]; then
+        printf "******STDERR:******\n%s\n*******************\n" "${TEST_STDERR}"
+        fail "stderr didn't match expected."
+    fi
+}
