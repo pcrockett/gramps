@@ -9,3 +9,16 @@ commands:
       - name: directory_path
         required: true
         help: Location where you want to save your data
+
+  - name: encrypt
+    help: Encrypt and save a file using the public key
+    args:
+      - name: input_path
+        required: false
+        help: Path to a file you want to encrypt
+    flags:
+      - long: --output
+        short: -o
+        arg: output_path
+        help: Path to where you want to save the encrypted file
+        required: true

@@ -34,7 +34,8 @@ gramps_usage() {
   echo
   # :command.usage_commands
   printf "%s\n" "Commands:"
-  printf "  %s   Generate a key pair and display the private key\n" "init"
+  printf "  %s   Generate a key pair and display the private key\n" "init   "
+  printf "  %s   Encrypt and save a file using the public key\n" "encrypt"
   echo
 
   # :command.long_usage
@@ -84,6 +85,49 @@ gramps_init_usage() {
     # :argument.usage
     printf "  %s\n" "DIRECTORY_PATH"
     printf "    Location where you want to save your data\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+gramps_encrypt_usage() {
+  if [[ -n $long_usage ]]; then
+    printf "gramps encrypt - Encrypt and save a file using the public key\n"
+    echo
+
+  else
+    printf "gramps encrypt - Encrypt and save a file using the public key\n"
+    echo
+
+  fi
+
+  printf "%s\n" "Usage:"
+  printf "  gramps encrypt [INPUT_PATH] [OPTIONS]\n"
+  printf "  gramps encrypt --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n $long_usage ]]; then
+    printf "%s\n" "Options:"
+
+    # :command.usage_flags
+    # :flag.usage
+    printf "  %s\n" "--output, -o OUTPUT_PATH (required)"
+    printf "    Path to where you want to save the encrypted file\n"
+    echo
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_args
+    printf "%s\n" "Arguments:"
+
+    # :argument.usage
+    printf "  %s\n" "INPUT_PATH"
+    printf "    Path to a file you want to encrypt\n"
     echo
 
   fi
@@ -192,6 +236,23 @@ gramps_init_command() {
 
 }
 
+# :command.function
+gramps_encrypt_command() {
+  # src/encrypt_command.sh
+  # shellcheck shell=bash
+
+  # shellcheck disable=SC2154  # variables like ${args} are defined in main script
+  input_path="${args[input_path]}"
+  input_path="$(readlink --canonicalize "${input_path}")"
+  output_path="${args["--output"]}"
+  output_path="$(readlink --canonicalize "${output_path}")"
+
+  test -f "${input_path}" || panic "File not found: ${input_path}"
+
+  panic "Not a gramps directory: ${output_path}"
+
+}
+
 # :command.parse_requirements
 parse_requirements() {
   # :command.fixed_flags_filter
@@ -225,6 +286,13 @@ parse_requirements() {
       action="init"
       shift
       gramps_init_parse_requirements "$@"
+      shift $#
+      ;;
+
+    encrypt)
+      action="encrypt"
+      shift
+      gramps_encrypt_parse_requirements "$@"
       shift $#
       ;;
 
@@ -320,6 +388,76 @@ gramps_init_parse_requirements() {
 
 }
 
+# :command.parse_requirements
+gramps_encrypt_parse_requirements() {
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    case "${1:-}" in
+      --help | -h)
+        long_usage=yes
+        gramps_encrypt_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="encrypt"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      # :flag.case
+      --output | -o)
+
+        # :flag.case_arg
+        if [[ -n ${2+x} ]]; then
+
+          args['--output']="$2"
+          shift
+          shift
+        else
+          printf "%s\n" "--output requires an argument: --output, -o OUTPUT_PATH" >&2
+          exit 1
+        fi
+        ;;
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        if [[ -z ${args['input_path']+x} ]]; then
+
+          args['input_path']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
+
+        ;;
+
+    esac
+  done
+
+  # :command.required_flags_filter
+  if [[ -z ${args['--output']+x} ]]; then
+    printf "missing required flag: --output, -o OUTPUT_PATH\n" >&2
+    exit 1
+  fi
+
+}
+
 # :command.initialize
 initialize() {
   version="0.1.0"
@@ -339,6 +477,7 @@ run() {
 
   case "$action" in
     "init") gramps_init_command ;;
+    "encrypt") gramps_encrypt_command ;;
   esac
 }
 

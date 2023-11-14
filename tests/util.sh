@@ -50,13 +50,29 @@ assert_exit_code() {
 assert_stdout() {
     if ! [[ "${TEST_STDOUT}" =~ ${1} ]]; then
         printf "******STDOUT:******\n%s\n*******************\n" "${TEST_STDOUT}"
+        printf "*****EXPECTED:*****\n%s\n*******************\n" "${1}"
         fail "stdout didn't match expected."
+    fi
+}
+
+assert_no_stdout() {
+    if [ "${TEST_STDOUT}" != "" ]; then
+        printf "******STDOUT:******\n%s\n*******************\n" "${TEST_STDOUT}"
+        fail "stdout is expected to be empty."
     fi
 }
 
 assert_stderr() {
     if ! [[ "${TEST_STDERR}" =~ ${1} ]]; then
         printf "******STDERR:******\n%s\n*******************\n" "${TEST_STDERR}"
+        printf "*****EXPECTED:*****\n%s\n*******************\n" "${1}"
         fail "stderr didn't match expected."
+    fi
+}
+
+assert_no_stderr() {
+    if [ "${TEST_STDERR}" != "" ]; then
+        printf "******STDERR:******\n%s\n*******************\n" "${TEST_STDERR}"
+        fail "stderr is expected to be empty."
     fi
 }
