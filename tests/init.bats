@@ -10,10 +10,11 @@ source tests/util.sh
 
     local expected_stdout="^Here is your private key\. Write it down\. You will need it to decrypt
 files, however it will never be displayed again after this:
-
-  \w{5} \w{5} \w{5} \w{5}
-  \w{5} \w{5} \w{5} \w{5}
-  \w{5} \w{5} \w{5} \w{3}"
+╭───────────────────────╮
+│01\w{3} \w{5} \w{5} \w{5}│
+│\w{5} \w{5} \w{5} \w{5}│
+│\w{5} \w{5} \w{5} \w{5}│
+╰───────────────────────╯"
     if ! [[ "${TEST_STDOUT}" =~ ${expected_stdout} ]]; then
         printf "******STDOUT:******\n%s\n*******************\n" "${TEST_STDOUT}"
         fail "stdout didn't match expected."
