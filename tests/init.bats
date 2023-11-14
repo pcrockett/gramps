@@ -15,7 +15,7 @@ files, however it will never be displayed again after this:
 ╰───────────────────────╯\$"
 
     test -f "${TEST_CWD}/README.md"
-    grep --perl-regexp --line-regexp '^age1\w+$' "${TEST_CWD}/.pubkey"
+    grep --perl-regexp --line-regexp '^age1\w+$' "${TEST_CWD}/.gramps/pubkey"
 }
 
 @test "init - already initialized - stops" {

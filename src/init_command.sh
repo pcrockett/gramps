@@ -2,11 +2,15 @@
 
 # shellcheck disable=SC2154  # variables like ${args} are defined in main script
 directory_path="$(readlink --canonicalize "${args[directory_path]}")"
-pubkey_path="${directory_path}/.pubkey"
+gramps_dir="${directory_path}/.gramps"
+gramps_temp_dir="${gramps_dir}.tmp"
+pubkey_path="${gramps_temp_dir}/pubkey"
 readme_path="${directory_path}/README.md"
 
-test ! -f "${pubkey_path}" || panic "Already initialized: ${directory_path}"
-touch "${pubkey_path}"
+rm -rf "${gramps_temp_dir}"
+mkdir -p "${gramps_temp_dir}"
+
+test ! -d "${gramps_dir}" || panic "Already initialized: ${directory_path}"
 
 test ! -f "${readme_path}" || echo "WARNING: README.md already exists"
 touch "${readme_path}"
@@ -19,6 +23,8 @@ echo "AGE-SECRET-KEY-1${private_key}" | age-keygen -y > "${pubkey_path}"
 
 # prepend a version number to private key for future-proofing
 private_key="01${private_key}"
+
+mv "${gramps_temp_dir}" "${gramps_dir}"
 
 echo "Here is your private key. Write it down. You will need it to decrypt"
 echo "files, however it will never be displayed again after this:"
