@@ -1,5 +1,7 @@
 ## gramps 👴
 
+**work in progress:** proof of concept is there though.
+
 simple, pseudo-offline backups using [age](https://github.com/FiloSottile/age) encryption.
 
 ### _pseudo_-offline?
