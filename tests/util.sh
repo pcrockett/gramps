@@ -4,9 +4,11 @@ setup() {
     set -Eeuo pipefail
     TEST_CWD="$(mktemp --directory --tmpdir=/tmp gramps-test.XXXXXX)"
     TEST_HOME="$(mktemp --directory --tmpdir=/tmp gramps-home.XXXXXX)"
-    cp gramps "${TEST_CWD}"
+    mkdir -p "${TEST_HOME}/.local/bin"
+    cp gramps "${TEST_HOME}/.local/bin"
     cp .tool-versions "${TEST_CWD}"
     cd "${TEST_CWD}"
+    PATH="${TEST_HOME}/.local/bin:${PATH}"
     export HOME="${TEST_HOME}"
 }
 

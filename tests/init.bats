@@ -3,7 +3,7 @@
 source tests/util.sh
 
 @test "init - empty dir - initializes dir" {
-    capture_output ./gramps init .
+    capture_output gramps init .
     assert_exit_code 0
     assert_no_stderr
     assert_stdout "^Here is your private key\\. Write it down\\. You will need it to decrypt
@@ -19,8 +19,8 @@ files, however it will never be displayed again after this:
 }
 
 @test "init - already initialized - stops" {
-    ./gramps init .
-    capture_output ./gramps init .
+    gramps init .
+    capture_output gramps init .
     assert_exit_code 1
     assert_no_stdout
     assert_stderr "^FATAL: Already initialized: ${TEST_CWD}\$"
