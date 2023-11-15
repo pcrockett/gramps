@@ -22,3 +22,13 @@ commands:
         arg: output_path
         help: Path to where you want to save the encrypted file
         required: true
+
+  - name: decrypt
+    help: Decrypt a file using the offline private key
+    args:
+      - name: input_path
+        required: true
+        help: Path to a file you want to decrypt
+      - name: output_path
+        required: false
+        help: Path where you want to save the decrypted file (or stdout if not specified)
