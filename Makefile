@@ -12,5 +12,9 @@ test: gramps
 	bats tests
 .PHONY: test
 
+install: gramps
+	cp gramps ~/.local/bin
+.PHONY: install
+
 gramps: settings.yml src/bashly.yml src/*.sh
 	bashly generate
