@@ -32,3 +32,10 @@ commands:
       - name: output_path
         required: false
         help: Path where you want to save the decrypted file (or stdout if not specified)
+
+  - name: check
+    help: Check file integrity
+    args:
+      - name: directory_path
+        required: true
+        help: Location where you are saving your files

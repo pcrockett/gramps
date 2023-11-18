@@ -37,6 +37,7 @@ gramps_usage() {
   printf "  %s   Generate a key pair and display the private key\n" "init   "
   printf "  %s   Encrypt and save a file using the public key\n" "encrypt"
   printf "  %s   Decrypt a file using the offline private key\n" "decrypt"
+  printf "  %s   Check file integrity\n" "check  "
   echo
 
   # :command.long_usage
@@ -171,6 +172,43 @@ gramps_decrypt_usage() {
     # :argument.usage
     printf "  %s\n" "OUTPUT_PATH"
     printf "    Path where you want to save the decrypted file (or stdout if not specified)\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+gramps_check_usage() {
+  if [[ -n $long_usage ]]; then
+    printf "gramps check - Check file integrity\n"
+    echo
+
+  else
+    printf "gramps check - Check file integrity\n"
+    echo
+
+  fi
+
+  printf "%s\n" "Usage:"
+  printf "  gramps check DIRECTORY_PATH\n"
+  printf "  gramps check --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n $long_usage ]]; then
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_args
+    printf "%s\n" "Arguments:"
+
+    # :argument.usage
+    printf "  %s\n" "DIRECTORY_PATH"
+    printf "    Location where you are saving your files\n"
     echo
 
   fi
@@ -367,6 +405,21 @@ gramps_decrypt_command() {
 
 }
 
+# :command.function
+gramps_check_command() {
+  # src/check_command.sh
+  # shellcheck shell=bash
+
+  # shellcheck disable=SC2154  # variables like ${args} are defined in main script
+  directory_path="${args[directory_path]}"
+  gramps_dir="${directory_path}/.gramps"
+
+  test -d "${gramps_dir}" || panic "Not a gramps repo: ${directory_path}"
+
+  sha256sum --check "${gramps_dir}/sha256sum"
+
+}
+
 # :command.parse_requirements
 parse_requirements() {
   # :command.fixed_flags_filter
@@ -414,6 +467,13 @@ parse_requirements() {
       action="decrypt"
       shift
       gramps_decrypt_parse_requirements "$@"
+      shift $#
+      ;;
+
+    check)
+      action="check"
+      shift
+      gramps_check_parse_requirements "$@"
       shift $#
       ;;
 
@@ -639,6 +699,62 @@ gramps_decrypt_parse_requirements() {
 
 }
 
+# :command.parse_requirements
+gramps_check_parse_requirements() {
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    case "${1:-}" in
+      --help | -h)
+        long_usage=yes
+        gramps_check_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="check"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        if [[ -z ${args['directory_path']+x} ]]; then
+
+          args['directory_path']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
+
+        ;;
+
+    esac
+  done
+
+  # :command.required_args_filter
+  if [[ -z ${args['directory_path']+x} ]]; then
+    printf "missing required argument: DIRECTORY_PATH\nusage: gramps check DIRECTORY_PATH\n" >&2
+    exit 1
+  fi
+
+}
+
 # :command.initialize
 initialize() {
   version="0.1.0"
@@ -660,6 +776,7 @@ run() {
     "init") gramps_init_command ;;
     "encrypt") gramps_encrypt_command ;;
     "decrypt") gramps_decrypt_command ;;
+    "check") gramps_check_command ;;
   esac
 }
 
