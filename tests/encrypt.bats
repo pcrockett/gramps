@@ -58,3 +58,23 @@ source tests/util.sh
     # we'll test file contents elsewhere
     test -f ./foo.txt.age || fail "output file was not created"
 }
+
+@test "encrypt - single successful encryption - checksum added" {
+    gramps init . &> /dev/null
+    echo "foo" | gramps encrypt --output foo.txt.age
+    capture_output sha256sum --check .gramps/sha256sum
+    assert_stdout "foo.txt.age: OK"
+    assert_no_stderr
+    assert_exit_code 0
+}
+
+@test "encrypt - many successful encryptions - checksum added" {
+    gramps init . &> /dev/null
+    echo "foo" | gramps encrypt --output foo.txt.age
+    echo "foo2" | gramps encrypt --output foo2.txt.age
+    capture_output sha256sum --check .gramps/sha256sum
+    assert_stdout "foo.txt.age: OK
+foo2.txt.age: OK"
+    assert_no_stderr
+    assert_exit_code 0
+}

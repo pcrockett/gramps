@@ -291,7 +291,8 @@ gramps_encrypt_command() {
   output_path="$(readlink --canonicalize "${output_path}")"
   test ! -e "${output_path}" || panic "Already exists: ${output_path}"
 
-  gramps_dir="$(dirname "${output_path}")/.gramps"
+  output_dir="$(dirname "${output_path}")"
+  gramps_dir="${output_dir}/.gramps"
 
   test -d "${gramps_dir}" || panic "Not a gramps repository: ${gramps_dir}"
 
@@ -308,6 +309,11 @@ gramps_encrypt_command() {
       test -f "${input_path}" || panic "File not found: ${input_path}"
       "${age_cmd[@]}" "${input_path}"
   fi
+
+  (
+      cd "${output_dir}" || panic "unable to cd into ${output_dir}"
+      sha256sum "$(basename "${output_path}")" >> "${gramps_dir}/sha256sum"
+  )
 
   echo "File saved at ${output_path}"
 
