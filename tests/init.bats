@@ -14,8 +14,25 @@ files, however it will never be displayed again after this:
 │\w{5} \w{5} \w{5} \w{5}│
 ╰───────────────────────╯\$"
 
-    test -f "${TEST_CWD}/README.md"
-    grep --perl-regexp --line-regexp '^age1\w+$' "${TEST_CWD}/.gramps/pubkey"
+    pubkey_file="${TEST_CWD}/.gramps/pubkey"
+
+    diff README.md <(echo "# Gramps Pseudo-Offline Backup
+
+This is a [gramps](https://github.com/pcrockett/gramps) archive. \`gramps\` is just a Bash script
+wrapper for the [age](https://github.com/FiloSottile/age) encryption tool.
+
+Any files you see here are encrypted with this public key:
+
+    $(cat "${pubkey_file}")
+
+The private key has been written down <!-- TODO: where did you write down your private key? -->
+
+When you have the private key, you can decrypt files with the command:
+
+    gramps decrypt [the_encrypted_file] [the_decrypted_file]
+")
+
+    grep --perl-regexp --line-regexp '^age1\w+$' "${pubkey_file}"
 }
 
 @test "init - already initialized - stops" {
@@ -24,4 +41,12 @@ files, however it will never be displayed again after this:
     assert_exit_code 1
     assert_no_stdout
     assert_stderr "^FATAL: Already initialized: ${TEST_CWD}\$"
+}
+
+@test "init - README exists - warns" {
+    touch README.md
+    capture_output gramps init .
+    assert_stdout '^WARNING: README\.md already exists\.'
+    assert_no_stderr
+    assert_exit_code 0
 }
