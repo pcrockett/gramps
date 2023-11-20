@@ -35,7 +35,7 @@ fi
 
 (
     cd "${repository_path}" || panic "unable to cd into ${repository_path}"
-    sha256sum "$(basename "${output_path}")" >> "${gramps_dir}/sha256sum"
+    sha256sum "$(basename "${output_path}")" >> .gramps/sha256sum
 )
 
 echo "File saved at ${output_path}"

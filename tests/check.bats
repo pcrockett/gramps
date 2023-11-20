@@ -83,3 +83,14 @@ foobar.txt.age: OK"
     assert_no_stdout
     assert_exit_code 1
 }
+
+@test "check - different directory than current - succeeds" {
+    mkdir foobar
+    export GRAMPS_DEFAULT_REPO=./foobar
+    gramps init
+    echo "foo" | gramps encrypt --filename foo.txt
+    capture_output gramps check
+    assert_no_stderr
+    assert_stdout "foo.txt.age: OK"
+    assert_exit_code 0
+}
