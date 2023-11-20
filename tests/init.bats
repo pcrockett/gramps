@@ -21,7 +21,7 @@ files, however it will never be displayed again after this:
 This is a [gramps](https://github.com/pcrockett/gramps) repository. \`gramps\` is just a Bash script
 wrapper for the [age](https://github.com/FiloSottile/age) encryption tool.
 
-Any files you see here are encrypted with this public key:
+Any \`*.age\` files you see here are encrypted with this public key:
 
     $(cat "${pubkey_file}")
 

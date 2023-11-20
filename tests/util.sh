@@ -10,6 +10,7 @@ setup() {
     cd "${TEST_CWD}"
     PATH="${TEST_HOME}/.local/bin:${PATH}"
     export HOME="${TEST_HOME}"
+    unset GRAMPS_DEFAULT_REPO
 }
 
 teardown() {

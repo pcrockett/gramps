@@ -26,7 +26,7 @@ readme_content() {
     echo "This is a [gramps](https://github.com/pcrockett/gramps) repository. \`gramps\` is just a Bash script"
     echo "wrapper for the [age](https://github.com/FiloSottile/age) encryption tool."
     echo
-    echo "Any files you see here are encrypted with this public key:"
+    echo "Any \`*.age\` files you see here are encrypted with this public key:"
     echo
     echo "    $(cat "${pubkey_path}")"
     echo
