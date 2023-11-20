@@ -26,8 +26,8 @@ source tests/util.sh
 
 @test "check - valid files - shows OK" {
     gramps init .
-    echo "foo" | gramps encrypt -o foo.txt.age
-    echo "foobar" | gramps encrypt -o foobar.txt.age
+    echo "foo" | gramps encrypt --repo . --filename foo.txt
+    echo "foobar" | gramps encrypt --repo . --filename foobar.txt
     capture_output gramps check .
     assert_stdout "foo.txt.age: OK
 foobar.txt.age: OK"
@@ -37,8 +37,8 @@ foobar.txt.age: OK"
 
 @test "check - corrupt files - shows fail" {
     gramps init .
-    echo "foo" | gramps encrypt -o foo.txt.age
-    echo "foobar" | gramps encrypt -o foobar.txt.age
+    echo "foo" | gramps encrypt --repo . --filename foo.txt
+    echo "foobar" | gramps encrypt --repo . --filename foobar.txt
 
     echo "oops, file was modified" >> foo.txt.age
 
@@ -51,8 +51,8 @@ foobar.txt.age: OK\$"
 
 @test "check - missing files - shows missing" {
     gramps init .
-    echo "foo" | gramps encrypt -o foo.txt.age
-    echo "foobar" | gramps encrypt -o foobar.txt.age
+    echo "foo" | gramps encrypt --repo . --filename foo.txt
+    echo "foobar" | gramps encrypt --repo . --filename foobar.txt
     rm foobar.txt.age
 
     capture_output gramps check .

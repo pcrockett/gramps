@@ -34,8 +34,8 @@ gramps_usage() {
   echo
   # :command.usage_commands
   printf "%s\n" "Commands:"
-  printf "  %s   Generate a key pair and display the private key\n" "init   "
-  printf "  %s   Encrypt and save a file using the public key\n" "encrypt"
+  printf "  %s   Initialize a new repository with a key pair and display the private key\n" "init   "
+  printf "  %s   Encrypt a file using the repository's public key\n" "encrypt"
   printf "  %s   Decrypt a file using the offline private key\n" "decrypt"
   printf "  %s   Check file integrity\n" "check  "
   echo
@@ -66,11 +66,11 @@ gramps_usage() {
 # :command.usage
 gramps_init_usage() {
   if [[ -n $long_usage ]]; then
-    printf "gramps init - Generate a key pair and display the private key\n"
+    printf "gramps init - Initialize a new repository with a key pair and display the private key\n"
     echo
 
   else
-    printf "gramps init - Generate a key pair and display the private key\n"
+    printf "gramps init - Initialize a new repository with a key pair and display the private key\n"
     echo
 
   fi
@@ -94,7 +94,7 @@ gramps_init_usage() {
 
     # :argument.usage
     printf "  %s\n" "REPOSITORY_PATH"
-    printf "    Repository path where you want to save your data\n"
+    printf "    Repository directory path. Defaults to \`GRAMPS_DEFAULT_REPO\` env variable.\n"
     echo
 
   fi
@@ -103,11 +103,11 @@ gramps_init_usage() {
 # :command.usage
 gramps_encrypt_usage() {
   if [[ -n $long_usage ]]; then
-    printf "gramps encrypt - Encrypt and save a file using the public key\n"
+    printf "gramps encrypt - Encrypt a file using the repository's public key\n"
     echo
 
   else
-    printf "gramps encrypt - Encrypt and save a file using the public key\n"
+    printf "gramps encrypt - Encrypt a file using the repository's public key\n"
     echo
 
   fi
@@ -123,8 +123,13 @@ gramps_encrypt_usage() {
 
     # :command.usage_flags
     # :flag.usage
-    printf "  %s\n" "--output, -o OUTPUT_PATH (required)"
-    printf "    Path to where you want to save the encrypted file\n"
+    printf "  %s\n" "--repo, -d REPOSITORY_PATH"
+    printf "    Repository directory path. Defaults to \`GRAMPS_DEFAULT_REPO\` env variable.\n"
+    echo
+
+    # :flag.usage
+    printf "  %s\n" "--filename, -n FILE_NAME"
+    printf "    Name of the ciphertext file in the repository. \`.age\` will be appended to\n    it. Only necessary if INPUT_PATH isn't specified.\n"
     echo
 
     # :command.usage_fixed_flags
@@ -137,7 +142,7 @@ gramps_encrypt_usage() {
 
     # :argument.usage
     printf "  %s\n" "INPUT_PATH"
-    printf "    Path to a file you want to encrypt\n"
+    printf "    Path to a plaintext file you want to encrypt\n"
     echo
 
   fi
@@ -356,16 +361,28 @@ gramps_encrypt_command() {
   # shellcheck shell=bash
 
   # shellcheck disable=SC2154  # variables like ${args} are defined in main script
-  input_path="${args[input_path]:-}"
 
-  output_path="${args["--output"]}"
-  output_path="$(readlink --canonicalize "${output_path}")"
+  repo_path="${args["--repo"]:-}"
+  if [ "${repo_path}" == "" ]; then
+      repo_path="${GRAMPS_DEFAULT_REPO:-}"
+  fi
+  test "${repo_path}" != "" || panic "Must specify a repository path via --repo flag or GRAMPS_DEFAULT_REPO env variable."
+  repo_path="$(readlink --canonicalize "${repo_path}")"
+
+  out_file_name="${args["--filename"]:-}"
+
+  input_path="${args[input_path]:-}"
+  if [ "${input_path}" == "" ]; then
+      test "${out_file_name}" != "" || panic "Must specify --filename flag when no INPUT_PATH is specified."
+  elif [ "${out_file_name}" == "" ]; then
+      out_file_name="$(basename "${input_path}")"
+  fi
+
+  output_path="$(readlink --canonicalize "${repo_path}/${out_file_name}.age")"
   test ! -e "${output_path}" || panic "Already exists: ${output_path}"
 
-  output_dir="$(dirname "${output_path}")"
-  gramps_dir="${output_dir}/.gramps"
-
-  test -d "${gramps_dir}" || panic "Not a gramps repository: ${gramps_dir}"
+  gramps_dir="${repo_path}/.gramps"
+  test -d "${gramps_dir}" || panic "Not a gramps repository: ${repo_path}"
 
   age_cmd=(
       age --encrypt --armor
@@ -382,7 +399,7 @@ gramps_encrypt_command() {
   fi
 
   (
-      cd "${output_dir}" || panic "unable to cd into ${output_dir}"
+      cd "${repo_path}" || panic "unable to cd into ${repo_path}"
       sha256sum "$(basename "${output_path}")" >> "${gramps_dir}/sha256sum"
   )
 
@@ -622,16 +639,31 @@ gramps_encrypt_parse_requirements() {
     key="$1"
     case "$key" in
       # :flag.case
-      --output | -o)
+      --repo | -d)
 
         # :flag.case_arg
         if [[ -n ${2+x} ]]; then
 
-          args['--output']="$2"
+          args['--repo']="$2"
           shift
           shift
         else
-          printf "%s\n" "--output requires an argument: --output, -o OUTPUT_PATH" >&2
+          printf "%s\n" "--repo requires an argument: --repo, -d REPOSITORY_PATH" >&2
+          exit 1
+        fi
+        ;;
+
+      # :flag.case
+      --filename | -n)
+
+        # :flag.case_arg
+        if [[ -n ${2+x} ]]; then
+
+          args['--filename']="$2"
+          shift
+          shift
+        else
+          printf "%s\n" "--filename requires an argument: --filename, -n FILE_NAME" >&2
           exit 1
         fi
         ;;
@@ -657,12 +689,6 @@ gramps_encrypt_parse_requirements() {
 
     esac
   done
-
-  # :command.required_flags_filter
-  if [[ -z ${args['--output']+x} ]]; then
-    printf "missing required flag: --output, -o OUTPUT_PATH\n" >&2
-    exit 1
-  fi
 
 }
 

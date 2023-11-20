@@ -5,7 +5,8 @@
 source tests/util.sh
 
 @test "end-to-end - encrypted file in initialized repo - can decrypt" {
-    capture_output gramps init .
+    export GRAMPS_DEFAULT_REPO=.
+    capture_output gramps init
 
     # note the capture groups (...) in the following regex; we will get those values via
     # `BASH_REMATCH[*]` below.
@@ -24,7 +25,7 @@ source tests/util.sh
         ${BASH_REMATCH[3]}
     "
 
-    echo "foo" | gramps encrypt --output foo.txt.age
+    echo "foo" | gramps encrypt --filename foo.txt
     capture_output gramps decrypt foo.txt.age < <(echo "${private_key}")
     assert_stdout "foo"
     assert_exit_code 0
