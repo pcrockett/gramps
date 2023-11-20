@@ -36,7 +36,7 @@ gramps_usage() {
   printf "%s\n" "Commands:"
   printf "  %s   Initialize a new repository with a key pair and display the private key\n" "init   "
   printf "  %s   Encrypt a file using the repository's public key\n" "encrypt"
-  printf "  %s   Decrypt a file using the offline private key\n" "decrypt"
+  printf "  %s   Decrypt a file using a repository's offline private key\n" "decrypt"
   printf "  %s   Check file integrity\n" "check  "
   echo
 
@@ -151,11 +151,11 @@ gramps_encrypt_usage() {
 # :command.usage
 gramps_decrypt_usage() {
   if [[ -n $long_usage ]]; then
-    printf "gramps decrypt - Decrypt a file using the offline private key\n"
+    printf "gramps decrypt - Decrypt a file using a repository's offline private key\n"
     echo
 
   else
-    printf "gramps decrypt - Decrypt a file using the offline private key\n"
+    printf "gramps decrypt - Decrypt a file using a repository's offline private key\n"
     echo
 
   fi
@@ -179,7 +179,7 @@ gramps_decrypt_usage() {
 
     # :argument.usage
     printf "  %s\n" "INPUT_PATH"
-    printf "    Path to a file you want to decrypt\n"
+    printf "    Path to the file in a gramps repository that you want to decrypt\n"
     echo
 
     # :argument.usage
@@ -203,7 +203,7 @@ gramps_check_usage() {
   fi
 
   printf "%s\n" "Usage:"
-  printf "  gramps check DIRECTORY_PATH\n"
+  printf "  gramps check [REPOSITORY_PATH]\n"
   printf "  gramps check --help | -h\n"
   echo
 
@@ -220,8 +220,8 @@ gramps_check_usage() {
     printf "%s\n" "Arguments:"
 
     # :argument.usage
-    printf "  %s\n" "DIRECTORY_PATH"
-    printf "    Location where you are saving your files\n"
+    printf "  %s\n" "REPOSITORY_PATH"
+    printf "    Repository directory path. Defaults to \`GRAMPS_DEFAULT_REPO\` env variable.\n"
     echo
 
   fi
@@ -459,12 +459,17 @@ gramps_decrypt_command() {
 gramps_check_command() {
   # src/check_command.sh
   # shellcheck shell=bash
-
   # shellcheck disable=SC2154  # variables like ${args} are defined in main script
-  directory_path="${args[directory_path]}"
-  gramps_dir="${directory_path}/.gramps"
 
-  test -d "${gramps_dir}" || panic "Not a gramps repo: ${directory_path}"
+  repository_path="${args[repository_path]:-}"
+  if [ "${repository_path}" == "" ]; then
+      repository_path="${GRAMPS_DEFAULT_REPO:-}"
+  fi
+  test "${repository_path}" != "" || panic "Must specify a repository path via REPOSITORY_PATH parameter or GRAMPS_DEFAULT_REPO env variable."
+
+  gramps_dir="${repository_path}/.gramps"
+
+  test -d "${gramps_dir}" || panic "Not a gramps repo: ${repository_path}"
 
   sha256sum --check "${gramps_dir}/sha256sum"
 
@@ -786,9 +791,9 @@ gramps_check_parse_requirements() {
       *)
         # :command.parse_requirements_case
         # :command.parse_requirements_case_simple
-        if [[ -z ${args['directory_path']+x} ]]; then
+        if [[ -z ${args['repository_path']+x} ]]; then
 
-          args['directory_path']=$1
+          args['repository_path']=$1
           shift
         else
           printf "invalid argument: %s\n" "$key" >&2
@@ -799,12 +804,6 @@ gramps_check_parse_requirements() {
 
     esac
   done
-
-  # :command.required_args_filter
-  if [[ -z ${args['directory_path']+x} ]]; then
-    printf "missing required argument: DIRECTORY_PATH\nusage: gramps check DIRECTORY_PATH\n" >&2
-    exit 1
-  fi
 
 }
 

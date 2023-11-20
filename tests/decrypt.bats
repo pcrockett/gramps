@@ -41,9 +41,8 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
 }
 
 @test "decrypt - uninitialized input dir - succeeds" {
-    # right now there's no reason for gramps to fail when decrypting something with the private
-    # key. however the next feature i want to add is sha256sum checking _before_ decryption. then
-    # this test name should be changed to `- fails`.
+    # right now there's no reason for gramps to fail when decrypting something with the private key,
+    # EVEN THOUGH the file we're decrypting isn't in a valid gramps repository.
     echo "${ENCRYPTED_CONTENTS}" > foo.txt.age
     capture_output gramps decrypt foo.txt.age \
         < <(echo "${DUMMY_PRIVATE_KEY}")

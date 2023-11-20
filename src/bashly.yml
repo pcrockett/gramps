@@ -29,11 +29,11 @@ commands:
         required: false
 
   - name: decrypt
-    help: Decrypt a file using the offline private key
+    help: Decrypt a file using a repository's offline private key
     args:
       - name: input_path
         required: true
-        help: Path to a file you want to decrypt
+        help: Path to the file in a gramps repository that you want to decrypt
       - name: output_path
         required: false
         help: Path where you want to save the decrypted file (or stdout if not specified)
@@ -41,9 +41,9 @@ commands:
   - name: check
     help: Check file integrity
     args:
-      - name: directory_path
-        required: true
-        help: Location where you are saving your files
+      - name: repository_path
+        required: false
+        help: Repository directory path. Defaults to `GRAMPS_DEFAULT_REPO` env variable.
 
 environment_variables:
   - name: gramps_default_repo

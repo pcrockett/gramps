@@ -62,3 +62,24 @@ foobar.txt.age: FAILED open or read\$"
 sha256sum: WARNING: 1 listed file could not be read\$"
     assert_exit_code 1
 }
+
+@test "check - repo env variable only - finds correct repo" {
+    export GRAMPS_DEFAULT_REPO=.
+    gramps init
+    echo "foo" | gramps encrypt --filename foo.txt
+    echo "foobar" | gramps encrypt --filename foobar.txt
+    capture_output gramps check
+    assert_no_stderr
+    assert_stdout "foo.txt.age: OK
+foobar.txt.age: OK"
+    assert_exit_code 0
+}
+
+@test "check - neither repo env variable nor parameter - fails" {
+    gramps init .
+    echo "foo" | gramps encrypt --repo . --filename foo.txt
+    capture_output gramps check
+    assert_stderr '^FATAL: Must specify a repository path via REPOSITORY_PATH parameter or GRAMPS_DEFAULT_REPO env variable\.$'
+    assert_no_stdout
+    assert_exit_code 1
+}
