@@ -51,6 +51,15 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
     assert_exit_code 0
 }
 
+@test "decrypt - lowercase private key - succeeds" {
+    echo "${ENCRYPTED_CONTENTS}" > foo.txt.age
+    capture_output gramps decrypt foo.txt.age \
+        < <(echo '01wcvp648udc5n82cdpwa8zz6xdel74ymr5fdj95n8hhzsz8yvf0mq90gq8e')
+    assert_no_stderr
+    assert_stdout "foo"
+    assert_exit_code 0
+}
+
 @test "decrypt - input file doesnt exist - fails" {
     capture_output gramps decrypt "${HOME}/foo.txt.age"
     assert_no_stdout

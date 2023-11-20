@@ -6,7 +6,7 @@ test -f "${input_path}" || panic "File not found: ${input_path}"
 
 output_path="${args[output_path]:-}"
 
-private_key_input="$(cat | tr --delete '[:space:]')"
+private_key_input="$(cat | tr --delete '[:space:]' | tr '[:lower:]' '[:upper:]')"
 input_len="${#private_key_input}"
 
 test "${input_len}" -eq 60 || panic "Invalid key format"
