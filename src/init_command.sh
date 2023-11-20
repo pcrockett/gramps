@@ -1,17 +1,23 @@
 # shellcheck shell=bash
-
 # shellcheck disable=SC2154  # variables like ${args} are defined in main script
-directory_path="$(readlink --canonicalize "${args[directory_path]}")"
-gramps_dir="${directory_path}/.gramps"
+
+repository_path="${args[repository_path]:-}"
+if [ "${repository_path}" == "" ]; then
+    repository_path="${GRAMPS_DEFAULT_REPO:-}"
+fi
+
+test "${repository_path}" != "" || panic "Must specify a repository path via REPOSITORY_PATH parameter or GRAMPS_DEFAULT_REPO env variable."
+repository_path="$(readlink --canonicalize "${repository_path}")"
+
+gramps_dir="${repository_path}/.gramps"
 gramps_temp_dir="${gramps_dir}.tmp"
 pubkey_path="${gramps_temp_dir}/pubkey"
-readme_path="${directory_path}/README.md"
+readme_path="${repository_path}/README.md"
 
 rm -rf "${gramps_temp_dir}"
 mkdir -p "${gramps_temp_dir}"
 
-test ! -d "${gramps_dir}" || panic "Already initialized: ${directory_path}"
-
+test ! -d "${gramps_dir}" || panic "Already initialized: ${repository_path}"
 test ! -f "${readme_path}" || echo "WARNING: README.md already exists."
 
 private_key="$(
@@ -23,7 +29,7 @@ echo "AGE-SECRET-KEY-1${private_key}" | age-keygen -y > "${pubkey_path}"
 readme_content() {
     echo "# Gramps Pseudo-Offline Backup"
     echo
-    echo "This is a [gramps](https://github.com/pcrockett/gramps) archive. \`gramps\` is just a Bash script"
+    echo "This is a [gramps](https://github.com/pcrockett/gramps) repository. \`gramps\` is just a Bash script"
     echo "wrapper for the [age](https://github.com/FiloSottile/age) encryption tool."
     echo
     echo "Any files you see here are encrypted with this public key:"

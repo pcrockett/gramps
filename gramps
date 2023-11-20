@@ -52,6 +52,14 @@ gramps_usage() {
     printf "    Show version number\n"
     echo
 
+    # :command.usage_environment_variables
+    printf "%s\n" "Environment Variables:"
+
+    # :environment_variable.usage
+    printf "  %s\n" "GRAMPS_DEFAULT_REPO"
+    printf "    If no gramps repo is specified in a command, defaults to this path\n"
+    echo
+
   fi
 }
 
@@ -68,7 +76,7 @@ gramps_init_usage() {
   fi
 
   printf "%s\n" "Usage:"
-  printf "  gramps init DIRECTORY_PATH\n"
+  printf "  gramps init [REPOSITORY_PATH]\n"
   printf "  gramps init --help | -h\n"
   echo
 
@@ -85,8 +93,8 @@ gramps_init_usage() {
     printf "%s\n" "Arguments:"
 
     # :argument.usage
-    printf "  %s\n" "DIRECTORY_PATH"
-    printf "    Location where you want to save your data\n"
+    printf "  %s\n" "REPOSITORY_PATH"
+    printf "    Repository path where you want to save your data\n"
     echo
 
   fi
@@ -280,19 +288,25 @@ panic() {
 gramps_init_command() {
   # src/init_command.sh
   # shellcheck shell=bash
-
   # shellcheck disable=SC2154  # variables like ${args} are defined in main script
-  directory_path="$(readlink --canonicalize "${args[directory_path]}")"
-  gramps_dir="${directory_path}/.gramps"
+
+  repository_path="${args[repository_path]:-}"
+  if [ "${repository_path}" == "" ]; then
+      repository_path="${GRAMPS_DEFAULT_REPO:-}"
+  fi
+
+  test "${repository_path}" != "" || panic "Must specify a repository path via REPOSITORY_PATH parameter or GRAMPS_DEFAULT_REPO env variable."
+  repository_path="$(readlink --canonicalize "${repository_path}")"
+
+  gramps_dir="${repository_path}/.gramps"
   gramps_temp_dir="${gramps_dir}.tmp"
   pubkey_path="${gramps_temp_dir}/pubkey"
-  readme_path="${directory_path}/README.md"
+  readme_path="${repository_path}/README.md"
 
   rm -rf "${gramps_temp_dir}"
   mkdir -p "${gramps_temp_dir}"
 
-  test ! -d "${gramps_dir}" || panic "Already initialized: ${directory_path}"
-
+  test ! -d "${gramps_dir}" || panic "Already initialized: ${repository_path}"
   test ! -f "${readme_path}" || echo "WARNING: README.md already exists."
 
   private_key="$(
@@ -304,7 +318,7 @@ gramps_init_command() {
   readme_content() {
       echo "# Gramps Pseudo-Offline Backup"
       echo
-      echo "This is a [gramps](https://github.com/pcrockett/gramps) archive. \`gramps\` is just a Bash script"
+      echo "This is a [gramps](https://github.com/pcrockett/gramps) repository. \`gramps\` is just a Bash script"
       echo "wrapper for the [age](https://github.com/FiloSottile/age) encryption tool."
       echo
       echo "Any files you see here are encrypted with this public key:"
@@ -566,9 +580,9 @@ gramps_init_parse_requirements() {
       *)
         # :command.parse_requirements_case
         # :command.parse_requirements_case_simple
-        if [[ -z ${args['directory_path']+x} ]]; then
+        if [[ -z ${args['repository_path']+x} ]]; then
 
-          args['directory_path']=$1
+          args['repository_path']=$1
           shift
         else
           printf "invalid argument: %s\n" "$key" >&2
@@ -579,12 +593,6 @@ gramps_init_parse_requirements() {
 
     esac
   done
-
-  # :command.required_args_filter
-  if [[ -z ${args['directory_path']+x} ]]; then
-    printf "missing required argument: DIRECTORY_PATH\nusage: gramps init DIRECTORY_PATH\n" >&2
-    exit 1
-  fi
 
 }
 

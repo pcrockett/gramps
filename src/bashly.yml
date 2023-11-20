@@ -6,9 +6,9 @@ commands:
   - name: init
     help: Generate a key pair and display the private key
     args:
-      - name: directory_path
-        required: true
-        help: Location where you want to save your data
+      - name: repository_path
+        required: false
+        help: Repository path where you want to save your data
 
   - name: encrypt
     help: Encrypt and save a file using the public key
@@ -39,3 +39,8 @@ commands:
       - name: directory_path
         required: true
         help: Location where you are saving your files
+
+environment_variables:
+  - name: gramps_default_repo
+    help: If no gramps repo is specified in a command, defaults to this path
+    required: false

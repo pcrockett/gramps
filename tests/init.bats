@@ -18,7 +18,7 @@ files, however it will never be displayed again after this:
 
     diff README.md <(echo "# Gramps Pseudo-Offline Backup
 
-This is a [gramps](https://github.com/pcrockett/gramps) archive. \`gramps\` is just a Bash script
+This is a [gramps](https://github.com/pcrockett/gramps) repository. \`gramps\` is just a Bash script
 wrapper for the [age](https://github.com/FiloSottile/age) encryption tool.
 
 Any files you see here are encrypted with this public key:
@@ -49,4 +49,19 @@ When you have the private key, you can decrypt files with the command:
     assert_stdout '^WARNING: README\.md already exists\.'
     assert_no_stderr
     assert_exit_code 0
+}
+
+@test "init - no repo given - fails" {
+    capture_output gramps init
+    assert_stderr '^FATAL: Must specify a repository path via REPOSITORY_PATH parameter or GRAMPS_DEFAULT_REPO env variable\.$'
+    assert_no_stdout
+    assert_exit_code 1
+}
+
+@test "init - repo path via env variable - succeeds" {
+    GRAMPS_DEFAULT_REPO="$(pwd)" capture_output gramps init
+    assert_no_stderr
+    assert_stdout '^Here is your private key\.'
+    assert_exit_code 0
+    test -d .gramps
 }
