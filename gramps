@@ -284,8 +284,50 @@ inspect_args() {
 # shellcheck shell=bash
 
 panic() {
+    # for when you really shouldn't keep calm and carry on
     echo "FATAL: ${*}" >&2
     exit 1
+}
+
+# src/lib/param_parsing.sh
+# shellcheck shell=bash
+
+set_repo_path_arg() {
+    # check CLI arguments and environment variables to determine repository path
+    #
+    # expected params: either `from_positional` or `from_option`, depending on whether the CLI
+    #     parameter is a positional or option flag
+    #
+    # precondition: an `args` associative array should be defined, with OPTIONAL repo path arg name
+    # postcondition: new `repository_path` variable will be defined
+
+    local arg_name
+    local human_friendly_arg_name
+
+    case "${1}" in
+        from_option)
+            arg_name="--repo"
+            human_friendly_arg_name="--repo"
+        ;;
+        from_positional)
+            arg_name="repository_path"
+            human_friendly_arg_name="REPOSITORY_PATH"  # same as what help messages display
+        ;;
+        *)
+            panic "expected only from_option or from_positional as parameters"
+        ;;
+    esac
+
+    repository_path="${args["${arg_name}"]:-}"
+    if [ "${repository_path}" == "" ]; then
+        repository_path="${GRAMPS_DEFAULT_REPO:-}"
+    fi
+
+    test "${repository_path}" != "" || panic "Must specify a repository path via ${human_friendly_arg_name} parameter or GRAMPS_DEFAULT_REPO env variable."
+
+    if [ "${repository_path}" == "." ]; then
+        repository_path="$(readlink --canonicalize "${repository_path}")"
+    fi
 }
 
 # :command.command_functions
@@ -295,13 +337,7 @@ gramps_init_command() {
   # shellcheck shell=bash
   # shellcheck disable=SC2154  # variables like ${args} are defined in main script
 
-  repository_path="${args[repository_path]:-}"
-  if [ "${repository_path}" == "" ]; then
-      repository_path="${GRAMPS_DEFAULT_REPO:-}"
-  fi
-
-  test "${repository_path}" != "" || panic "Must specify a repository path via REPOSITORY_PATH parameter or GRAMPS_DEFAULT_REPO env variable."
-  repository_path="$(readlink --canonicalize "${repository_path}")"
+  set_repo_path_arg from_positional
 
   gramps_dir="${repository_path}/.gramps"
   gramps_temp_dir="${gramps_dir}.tmp"
@@ -362,12 +398,7 @@ gramps_encrypt_command() {
 
   # shellcheck disable=SC2154  # variables like ${args} are defined in main script
 
-  repo_path="${args["--repo"]:-}"
-  if [ "${repo_path}" == "" ]; then
-      repo_path="${GRAMPS_DEFAULT_REPO:-}"
-  fi
-  test "${repo_path}" != "" || panic "Must specify a repository path via --repo flag or GRAMPS_DEFAULT_REPO env variable."
-  repo_path="$(readlink --canonicalize "${repo_path}")"
+  set_repo_path_arg from_option
 
   out_file_name="${args["--filename"]:-}"
 
@@ -378,11 +409,11 @@ gramps_encrypt_command() {
       out_file_name="$(basename "${input_path}")"
   fi
 
-  output_path="$(readlink --canonicalize "${repo_path}/${out_file_name}.age")"
+  output_path="$(readlink --canonicalize "${repository_path}/${out_file_name}.age")"
   test ! -e "${output_path}" || panic "Already exists: ${output_path}"
 
-  gramps_dir="${repo_path}/.gramps"
-  test -d "${gramps_dir}" || panic "Not a gramps repository: ${repo_path}"
+  gramps_dir="${repository_path}/.gramps"
+  test -d "${gramps_dir}" || panic "Not a gramps repository: ${repository_path}"
 
   age_cmd=(
       age --encrypt --armor
@@ -399,7 +430,7 @@ gramps_encrypt_command() {
   fi
 
   (
-      cd "${repo_path}" || panic "unable to cd into ${repo_path}"
+      cd "${repository_path}" || panic "unable to cd into ${repository_path}"
       sha256sum "$(basename "${output_path}")" >> "${gramps_dir}/sha256sum"
   )
 
@@ -461,12 +492,7 @@ gramps_check_command() {
   # shellcheck shell=bash
   # shellcheck disable=SC2154  # variables like ${args} are defined in main script
 
-  repository_path="${args[repository_path]:-}"
-  if [ "${repository_path}" == "" ]; then
-      repository_path="${GRAMPS_DEFAULT_REPO:-}"
-  fi
-  test "${repository_path}" != "" || panic "Must specify a repository path via REPOSITORY_PATH parameter or GRAMPS_DEFAULT_REPO env variable."
-
+  set_repo_path_arg from_positional
   gramps_dir="${repository_path}/.gramps"
 
   test -d "${gramps_dir}" || panic "Not a gramps repo: ${repository_path}"

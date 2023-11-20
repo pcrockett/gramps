@@ -4,15 +4,15 @@ source tests/util.sh
 
 @test "check - dir not initialized - fails" {
     capture_output gramps check .
-    assert_stderr '^FATAL: Not a gramps repo: \.$'
+    assert_stderr '^FATAL: Not a gramps repo: /tmp/gramps-test\.\w+$'
     assert_no_stdout
     assert_exit_code 1
 }
 
 @test "check - dir doesnt exist - fails" {
     capture_output gramps check ./this/does/not/exist
-    assert_stderr '^FATAL: Not a gramps repo: ./this/does/not/exist$'
     assert_no_stdout
+    assert_stderr '^FATAL: Not a gramps repo: \./this/does/not/exist$'
     assert_exit_code 1
 }
 

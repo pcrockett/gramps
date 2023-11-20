@@ -1,13 +1,7 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2154  # variables like ${args} are defined in main script
 
-repository_path="${args[repository_path]:-}"
-if [ "${repository_path}" == "" ]; then
-    repository_path="${GRAMPS_DEFAULT_REPO:-}"
-fi
-
-test "${repository_path}" != "" || panic "Must specify a repository path via REPOSITORY_PATH parameter or GRAMPS_DEFAULT_REPO env variable."
-repository_path="$(readlink --canonicalize "${repository_path}")"
+set_repo_path_arg from_positional
 
 gramps_dir="${repository_path}/.gramps"
 gramps_temp_dir="${gramps_dir}.tmp"

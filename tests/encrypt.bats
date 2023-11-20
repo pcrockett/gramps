@@ -4,7 +4,7 @@ source tests/util.sh
 
 @test "encrypt - no repo given - fails" {
     capture_output gramps encrypt --filename whatever
-    assert_stderr '^FATAL: Must specify a repository path via --repo flag or GRAMPS_DEFAULT_REPO env variable\.$'
+    assert_stderr '^FATAL: Must specify a repository path via --repo parameter or GRAMPS_DEFAULT_REPO env variable\.$'
     assert_no_stdout
     assert_exit_code 1
 }
@@ -97,7 +97,7 @@ foo2.txt.age: OK"
 @test "encrypt - both input_path and filename parameters specified - writes to filename" {
     gramps init . &> /dev/null
     echo "foo" > "${HOME}/foo.txt"
-    GRAMPS_DEBUG=true capture_output gramps encrypt "${HOME}/foo.txt" --repo . --filename "bar.txt"
+    capture_output gramps encrypt "${HOME}/foo.txt" --repo . --filename "bar.txt"
     assert_exit_code 0
     assert_stdout '^File saved at /tmp/gramps-test\.\w+/bar\.txt\.age$'
 

@@ -16,5 +16,5 @@ install: gramps
 	cp gramps ~/.local/bin
 .PHONY: install
 
-gramps: settings.yml src/bashly.yml src/*.sh
+gramps: settings.yml src/bashly.yml src/*.sh src/lib/*.sh
 	bashly generate
