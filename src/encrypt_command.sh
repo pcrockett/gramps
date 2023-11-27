@@ -22,16 +22,25 @@ test -d "${gramps_dir}" || panic "Not a gramps repository: ${repository_path}"
 age_cmd=(
     age --encrypt --armor
     --recipients-file "${gramps_dir}/pubkey"
-    --output "${output_path}"
+    --output "${output_path}.tmp"
 )
+
+on_exit() {
+    rm -f "${output_path}.tmp"
+}
+trap 'on_exit' EXIT
 
 if [ "${input_path}" == "" ]; then
     # reading from stdin
+    # TODO: unfortunately i haven't found a way to test what happens when the user hits Ctrl + C
+    #       while age is prompting for input. the `on_exit` trap should handle that though.
     "${age_cmd[@]}"
 else
     test -f "${input_path}" || panic "File not found: ${input_path}"
     "${age_cmd[@]}" "${input_path}"
 fi
+
+mv "${output_path}.tmp" "${output_path}"
 
 (
     cd "${repository_path}" || panic "unable to cd into ${repository_path}"
