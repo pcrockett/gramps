@@ -45,6 +45,23 @@ commands:
         required: false
         help: Repository directory path. Defaults to `GRAMPS_DEFAULT_REPO` env variable.
 
+  - name: export
+    help: Export a repository to zip file
+    args:
+      - name: output_directory
+        required: true
+        help: Directory where the zip file will be saved
+    flags:
+      - long: --repo
+        short: -d
+        arg: repository_path
+        help: Repository directory path. Defaults to `GRAMPS_DEFAULT_REPO` env variable.
+      - long: --filename
+        short: -n
+        arg: file_name
+        help: Name of the output zip file. Defaults to the name of the repository with timestamp.
+        required: false
+
 environment_variables:
   - name: gramps_default_repo
     help: If no gramps repo is specified in a command, defaults to this path
