@@ -44,11 +44,23 @@ When you have the private key, you can decrypt files with the command:
 }
 
 @test "init - README exists - warns" {
-    touch README.md
+    echo "foo" > README.md
     capture_output gramps init .
     assert_stdout '^WARNING: README\.md already exists\.'
     assert_no_stderr
     assert_exit_code 0
+
+    test "$(cat README.md)" = "foo"
+}
+
+@test "init - README is a directory - warns" {
+    mkdir README.md
+    capture_output gramps init .
+    assert_stdout '^WARNING: README\.md already exists\.'
+    assert_no_stderr
+    assert_exit_code 0
+
+    test -d README.md
 }
 
 @test "init - no repo given - fails" {

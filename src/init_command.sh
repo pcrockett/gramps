@@ -12,7 +12,6 @@ rm -rf "${gramps_temp_dir}"
 mkdir -p "${gramps_temp_dir}"
 
 test ! -d "${gramps_dir}" || panic "Already initialized: ${repository_path}"
-test ! -f "${readme_path}" || echo "WARNING: README.md already exists."
 
 private_key="$(
     age-keygen 2> /dev/null | grep --perl-regexp --only-matching '(?<=^AGE-SECRET-KEY-1).+$'
@@ -38,7 +37,11 @@ readme_content() {
     echo
 }
 
-readme_content > "${readme_path}"
+if [ -e "${readme_path}" ]; then
+    echo "WARNING: README.md already exists."
+else
+    readme_content > "${readme_path}"
+fi
 
 # prepend a version number to private key for future-proofing
 private_key="01${private_key}"
