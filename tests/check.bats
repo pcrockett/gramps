@@ -64,7 +64,10 @@ sha256sum: WARNING: 1 listed file could not be read\$"
 }
 
 @test "check - repo env variable only - finds correct repo" {
+
+    # shellcheck disable=SC2030  # i know GRAMPS_DEFAULT_REPO is local in `bats` tests
     export GRAMPS_DEFAULT_REPO=.
+
     gramps init
     echo "foo" | gramps encrypt --filename foo.txt
     echo "foobar" | gramps encrypt --filename foobar.txt
@@ -86,7 +89,10 @@ foobar.txt.age: OK"
 
 @test "check - different directory than current - succeeds" {
     mkdir foobar
+
+    # shellcheck disable=SC2031  # i know GRAMPS_DEFAULT_REPO was modified in util.sh. that's ok.
     export GRAMPS_DEFAULT_REPO=./foobar
+
     gramps init
     echo "foo" | gramps encrypt --filename foo.txt
     capture_output gramps check

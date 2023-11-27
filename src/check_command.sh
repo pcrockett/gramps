@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# shellcheck disable=SC2154  # variables like ${args} are defined in main script
+# shellcheck disable=SC2154  # variables like ${repository_path} are defined in main script
 
 set_repo_path_arg from_positional
 gramps_dir="${repository_path}/.gramps"

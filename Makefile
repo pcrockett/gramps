@@ -4,8 +4,8 @@ all: build lint test
 build: gramps
 .PHONY: build
 
-lint:
-	shellcheck ./gramps src/*.sh tests/*.sh
+lint: gramps
+	shellcheck ./gramps src/*.sh tests/*.sh tests/*.bats
 .PHONY: lint
 
 test: gramps
