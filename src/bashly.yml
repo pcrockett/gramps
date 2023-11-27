@@ -1,6 +1,6 @@
 name: gramps
 help: Pseudo-offline encrypted backup tool
-version: 0.1.0
+version: 0.1.1
 
 commands:
   - name: init
