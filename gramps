@@ -38,6 +38,7 @@ gramps_usage() {
   printf "  %s   Encrypt a file using the repository's public key\n" "encrypt"
   printf "  %s   Decrypt a file using a repository's offline private key\n" "decrypt"
   printf "  %s   Check file integrity\n" "check  "
+  printf "  %s   Export a repository to zip file\n" "export "
   echo
 
   # :command.long_usage
@@ -222,6 +223,54 @@ gramps_check_usage() {
     # :argument.usage
     printf "  %s\n" "REPOSITORY_PATH"
     printf "    Repository directory path. Defaults to \`GRAMPS_DEFAULT_REPO\` env variable.\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+gramps_export_usage() {
+  if [[ -n $long_usage ]]; then
+    printf "gramps export - Export a repository to zip file\n"
+    echo
+
+  else
+    printf "gramps export - Export a repository to zip file\n"
+    echo
+
+  fi
+
+  printf "%s\n" "Usage:"
+  printf "  gramps export OUTPUT_DIRECTORY [OPTIONS]\n"
+  printf "  gramps export --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n $long_usage ]]; then
+    printf "%s\n" "Options:"
+
+    # :command.usage_flags
+    # :flag.usage
+    printf "  %s\n" "--repo, -d REPOSITORY_PATH"
+    printf "    Repository directory path. Defaults to \`GRAMPS_DEFAULT_REPO\` env variable.\n"
+    echo
+
+    # :flag.usage
+    printf "  %s\n" "--filename, -n FILE_NAME"
+    printf "    Name of the output zip file. Defaults to the name of the repository with\n    timestamp.\n"
+    echo
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_args
+    printf "%s\n" "Arguments:"
+
+    # :argument.usage
+    printf "  %s\n" "OUTPUT_DIRECTORY"
+    printf "    Directory where the zip file will be saved\n"
     echo
 
   fi
@@ -516,6 +565,45 @@ gramps_check_command() {
 
 }
 
+# :command.function
+gramps_export_command() {
+  # src/export_command.sh
+  # shellcheck shell=bash
+  # shellcheck disable=SC2154  # variables like ${repository_path} are defined in main script
+
+  set_repo_path_arg from_option
+  test -d "${repository_path}/.gramps" || panic "Not a gramps repository: ${repository_path}"
+
+  output_directory="${args[output_directory]}"
+  test -d "${output_directory}" || panic "Does not exist: ${output_directory}"
+
+  # file name should be in the format ${repo_name}_YYYY-MM-DD-HHmm.zip
+  repo_name="$(basename "${repository_path}")"
+  file_name="${repo_name}_$(date +%F-%H%M).zip"
+
+  workspace="$(mktemp --directory)"
+  on_exit() {
+      rm -rf "${workspace}"
+  }
+  trap 'on_exit' EXIT
+
+  pushd "${repository_path}" &> /dev/null || panic "unable to cd to ${repository_path}"
+
+  zip_path="${workspace}/${file_name}"
+
+  # shellcheck disable=SC2035  # glob will always be interpreted as file / dir names, not options
+  zip --quiet --recurse-paths "${zip_path}" *
+  sha256sum "${zip_path}" > "${zip_path}.sha256sum"
+
+  popd &> /dev/null || panic "unable to cd back to original directory"
+
+  mv "${zip_path}" "${output_directory}"
+  mv "${zip_path}.sha256sum" "${output_directory}"
+
+  echo "Repository exported to ${output_directory}/${file_name}"
+
+}
+
 # :command.parse_requirements
 parse_requirements() {
   # :command.fixed_flags_filter
@@ -570,6 +658,13 @@ parse_requirements() {
       action="check"
       shift
       gramps_check_parse_requirements "$@"
+      shift $#
+      ;;
+
+    export)
+      action="export"
+      shift
+      gramps_export_parse_requirements "$@"
       shift $#
       ;;
 
@@ -848,6 +943,91 @@ gramps_check_parse_requirements() {
 
 }
 
+# :command.parse_requirements
+gramps_export_parse_requirements() {
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    case "${1:-}" in
+      --help | -h)
+        long_usage=yes
+        gramps_export_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="export"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      # :flag.case
+      --repo | -d)
+
+        # :flag.case_arg
+        if [[ -n ${2+x} ]]; then
+
+          args['--repo']="$2"
+          shift
+          shift
+        else
+          printf "%s\n" "--repo requires an argument: --repo, -d REPOSITORY_PATH" >&2
+          exit 1
+        fi
+        ;;
+
+      # :flag.case
+      --filename | -n)
+
+        # :flag.case_arg
+        if [[ -n ${2+x} ]]; then
+
+          args['--filename']="$2"
+          shift
+          shift
+        else
+          printf "%s\n" "--filename requires an argument: --filename, -n FILE_NAME" >&2
+          exit 1
+        fi
+        ;;
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        if [[ -z ${args['output_directory']+x} ]]; then
+
+          args['output_directory']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
+
+        ;;
+
+    esac
+  done
+
+  # :command.required_args_filter
+  if [[ -z ${args['output_directory']+x} ]]; then
+    printf "missing required argument: OUTPUT_DIRECTORY\nusage: gramps export OUTPUT_DIRECTORY [OPTIONS]\n" >&2
+    exit 1
+  fi
+
+}
+
 # :command.initialize
 initialize() {
   version="0.1.1"
@@ -870,6 +1050,7 @@ run() {
     "encrypt") gramps_encrypt_command ;;
     "decrypt") gramps_decrypt_command ;;
     "check") gramps_check_command ;;
+    "export") gramps_export_command ;;
   esac
 }
 

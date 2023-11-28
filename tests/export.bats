@@ -14,7 +14,7 @@ source tests/util.sh
     gramps init my-gramps-repo
     capture_output gramps export . --repo my-gramps-repo
     assert_no_stderr
-    assert_stdout '^Repository exported to (my-gramps-repo_[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}-[[:digit:]]{4}\.zip)$'
+    assert_stdout '^Repository exported to (\./my-gramps-repo_[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}-[[:digit:]]{4}\.zip)$'
     filename="${BASH_REMATCH[1]}"
     test -f "${filename}" || fail "${filename} doesn't exist!"
 }
