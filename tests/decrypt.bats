@@ -60,6 +60,15 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
     assert_exit_code 0
 }
 
+@test "decrypt - output file specified - succeeds" {
+    echo "${ENCRYPTED_CONTENTS}" > foo.txt.age
+    capture_output gramps decrypt foo.txt.age foo.txt \
+        < <(echo "${DUMMY_PRIVATE_KEY}")
+    assert_no_stderr
+    assert_stdout '^File saved at foo\.txt$'
+    assert_exit_code 0
+}
+
 @test "decrypt - input file doesnt exist - fails" {
     capture_output gramps decrypt "${HOME}/foo.txt.age"
     assert_no_stdout

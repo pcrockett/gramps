@@ -32,9 +32,7 @@ trap 'on_exit' EXIT
 
 if [ "${input_path}" == "" ]; then
     # reading from stdin
-    # TODO: unfortunately i haven't found a way to test what happens when the user hits Ctrl + C
-    #       while age is prompting for input. the `on_exit` trap should handle that though.
-    "${age_cmd[@]}"
+    prompt_if_interactive "Enter cleartext to be encrypted." "${age_cmd[@]}"
 else
     test -f "${input_path}" || panic "File not found: ${input_path}"
     "${age_cmd[@]}" "${input_path}"
