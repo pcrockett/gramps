@@ -46,6 +46,11 @@ fi
 # prepend a version number to private key for future-proofing
 private_key="01${private_key}"
 
+# create the checksum file with just the pubkey file in it
+pushd "${repository_path}" &> /dev/null || panic "unable to cd to ${repository_path}"
+sha256sum .gramps.tmp/pubkey | sed 's/.gramps.tmp/.gramps/' > .gramps.tmp/sha256sum
+popd &> /dev/null || panic "unable to cd back to original directory"
+
 mv "${gramps_temp_dir}" "${gramps_dir}"
 
 echo "Here is your private key. Write it down. You will need it to decrypt"

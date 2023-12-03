@@ -24,6 +24,14 @@ source tests/util.sh
     assert_exit_code 1
 }
 
+@test "check - no files added - still checks pubkey" {
+    gramps init .
+    capture_output gramps check .
+    assert_no_stderr
+    assert_stdout '^\.gramps/pubkey: OK$'
+    assert_exit_code 0
+}
+
 @test "check - valid files - shows OK" {
     gramps init .
     echo "foo" | gramps encrypt --repo . --filename foo.txt
@@ -43,8 +51,9 @@ foobar.txt.age: OK"
     echo "oops, file was modified" >> foo.txt.age
 
     capture_output gramps check .
-    assert_stdout "^foo.txt.age: FAILED
-foobar.txt.age: OK\$"
+    assert_stdout "^\\.gramps/pubkey: OK
+foo\\.txt\\.age: FAILED
+foobar\\.txt\\.age: OK\$"
     assert_stderr "^sha256sum: WARNING: 1 computed checksum did NOT match\$"
     assert_exit_code 1
 }
@@ -56,8 +65,9 @@ foobar.txt.age: OK\$"
     rm foobar.txt.age
 
     capture_output gramps check .
-    assert_stdout "^foo.txt.age: OK
-foobar.txt.age: FAILED open or read\$"
+    assert_stdout "^\\.gramps/pubkey: OK
+foo\\.txt\\.age: OK
+foobar\\.txt\\.age: FAILED open or read\$"
     assert_stderr "^sha256sum: foobar.txt.age: No such file or directory
 sha256sum: WARNING: 1 listed file could not be read\$"
     assert_exit_code 1
