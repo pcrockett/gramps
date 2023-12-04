@@ -1,54 +1,63 @@
 ## gramps 👴
 
-simple, pseudo-offline backup tool using [age](https://github.com/FiloSottile/age) encryption.
+a simple, pseudo-offline backup tool using [age](https://github.com/FiloSottile/age) encryption.
 
-_this is a new tool. after a 1.0 release i'll start making some backward-compatibility guarantees._
+to be clear, _gramps_ isn't so much of a _backup_ program, per say. it's more of a really
+easy-to-use encryption tool that was built to safeguard especially sensitive data that you would
+otherwise want to keep backed up completely offline (think MFA recovery codes or password vault
+backups). it gives you a kind of _pseudo_-offline backup.
+
+_disclaimer: gramps is suitable for MFA recovery codes, not nuclear launch codes._
 
 ### _pseudo_-offline?
 
-_gramps_ is a simple way to generate a public / private key pair, where the private key is written
-down on paper and the public key stays on whatever device(s) you own. this makes it convenient to
-save random bits of data (think MFA recovery codes or password vault backups), such that they can
-only be decrypted with your offline private key.
+_gramps_ is really just a simple way to generate a public / private key pair where the private key
+is written down on paper and the public key stays on whatever device(s) you own. this makes it
+super easy to encrypt information such that it can only be decrypted with your offline private key.
 
-so yes, your _encrypted_ data remains technically online (on your devices and in your backups),
-but the key to decrypt that data is offline (paper), which is a significant layer of security for
-your most sensitive, least-accessed bits of data.
+in other words, it gives you a backup that is super easy to add to (and maintain) over time, but
+then requires a person to have physical access to a piece of paper if they want to actually get any
+data out of it.
 
-### but why?
+so yes, your _encrypted_ data remains technically online, but it achieves _almost_ the same security
+benefits as a completely offline backup.
 
-_if you need offline backups, why don't you just make your backups **fully** offline?_
+<details>
+<summary>
+<em>"if you need offline backups, why don't you just make your backups <strong>fully</strong> offline?"</em>
+</summary>
+<br>
 
-there are a few reasons to avoid fully-offline backups, actually. off the top of my head:
+there are a few reasons to avoid normal 100% offline backups. off the top of my head:
 
 1. "offline" in this sense usually means "on an air-gapped or powered-off device." these devices
     require maintenance and regular checks to make sure they're still working or their storage
     isn't corrupted. _and you can't easily automate those tasks._ you have to depend on unreliable
     human meat bags to do that regular maintenance.
-2. fully-offline backup data is hard to keep up-to-date. offline backups aren't terribly useful if
-    they are rarely up-to-date. and you _know_ your future self will rarely find the time to deal
-    with the hassle of updating a fully-offline backup.
+2. fully-offline backup data is hard to keep up-to-date. you _know_ your future self will rarely
+    find the time to deal with the hassle of updating a fully-offline backup. there's not much point
+    in restoring an offline backup when the information it contains is no longer relevant.
 
-on the other hand, if the only fully-offline bit of data is your decryption key on a piece of paper,
-updating your backed-up data is trivial. and it's unlikely you'll have problems maintaining it over
-the next few _decades_ (depending on the type of paper and pen used, i guess).
+on the other hand, if the only offline bit of data is your decryption key on a piece of paper,
+maintenance isn't any more difficult than regular run-of-the-mill backup maintenance. testing your
+offline-ish backup looks the same as testing an online backup, with the additional step of going to
+your sock drawer to dig out your private key, and entering it into the terminal to make sure it
+still decrypts your files, which is probably about 2 minutes of additional effort.
+</details>
 
-maintenance for a partial offline backup looks like this:
+<details>
+<summary>
+<em>"this is a bad idea; someone will find a flaw in the way age does encryption, and then your backups will be compromised."</em>
+</summary>
+<br>
 
-1. check your checksums (with `gramps check`)
-2. _do you know where your key is?_ yup, found it.
-3. _is it still legible?_ yup.
+yup. this isn't about keeping your data confidential _forever_. it's about adding a layer of
+security to more sensitive stuff that will _probably_ be effective for the next few years. if
+you're afraid someone will keep your data around until the encryption is broken, you should do some
+things like rotate your MFA recovery codes and change your passwords. then create a new backup with
+more advanced cryptography.
 
-it's also wise to periodically do a "full restore" test: _can you still decrypt a file with the
-paper key?_ that's the hardest part, and usually takes about a minute of effort (typing in the
-private key).
-
-### installation
-
-_official Linux support only._ PRs welcome for other OSes.
-
-* install [age](https://github.com/FiloSottile/age)
-* drop the [gramps script](./gramps) into a bin directory on your `PATH`
+</details>
 
 ### example usage
 
@@ -112,6 +121,13 @@ gramps export .
 sha256sum --check ./backup_2023-12-01-1658.zip.sha256sum
 # backup_2023-12-01-1658.zip: OK
 ```
+
+### installation
+
+_official Linux support only._ PRs welcome for other OSes.
+
+* install [age](https://github.com/FiloSottile/age)
+* drop the [gramps script](./gramps) into a bin directory on your `PATH`
 
 ### contributing
 
