@@ -1,7 +1,8 @@
 all: build lint test
 .PHONY: all
 
-build: gramps
+build:
+	bashly generate
 .PHONY: build
 
 lint: gramps
