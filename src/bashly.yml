@@ -62,6 +62,13 @@ commands:
         help: Name of the output zip file. Defaults to the name of the repository with timestamp.
         required: false
 
+  - name: rm
+    help: Remove a file from a repository
+    args:
+      - name: filename_or_path
+        required: true
+        help: Filename relative to the repository, or full absolute path to the file
+
 environment_variables:
   - name: gramps_default_repo
     help: If no gramps repo is specified in a command, defaults to this path
