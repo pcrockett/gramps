@@ -1,6 +1,6 @@
 name: gramps
 help: Pseudo-offline encrypted backup tool
-version: 0.2.1
+version: 0.3.0
 
 commands:
   - name: init
@@ -65,9 +65,9 @@ commands:
   - name: rm
     help: Remove a file from a repository
     args:
-      - name: filename_or_path
+      - name: file_path
         required: true
-        help: Filename relative to the repository, or full absolute path to the file
+        help: Path to the file you want to delete
 
 environment_variables:
   - name: gramps_default_repo

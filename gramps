@@ -39,6 +39,7 @@ gramps_usage() {
   printf "  %s   Decrypt a file using a repository's offline private key\n" "decrypt"
   printf "  %s   Check file integrity\n" "check  "
   printf "  %s   Export a repository to zip file\n" "export "
+  printf "  %s   Remove a file from a repository\n" "rm     "
   echo
 
   # :command.long_usage
@@ -271,6 +272,43 @@ gramps_export_usage() {
     # :argument.usage
     printf "  %s\n" "OUTPUT_DIRECTORY"
     printf "    Directory where the zip file will be saved\n"
+    echo
+
+  fi
+}
+
+# :command.usage
+gramps_rm_usage() {
+  if [[ -n $long_usage ]]; then
+    printf "gramps rm - Remove a file from a repository\n"
+    echo
+
+  else
+    printf "gramps rm - Remove a file from a repository\n"
+    echo
+
+  fi
+
+  printf "%s\n" "Usage:"
+  printf "  gramps rm FILE_PATH\n"
+  printf "  gramps rm --help | -h\n"
+  echo
+
+  # :command.long_usage
+  if [[ -n $long_usage ]]; then
+    printf "%s\n" "Options:"
+
+    # :command.usage_fixed_flags
+    printf "  %s\n" "--help, -h"
+    printf "    Show this help\n"
+    echo
+
+    # :command.usage_args
+    printf "%s\n" "Arguments:"
+
+    # :argument.usage
+    printf "  %s\n" "FILE_PATH"
+    printf "    Path to the file you want to delete\n"
     echo
 
   fi
@@ -655,6 +693,32 @@ gramps_export_command() {
 
 }
 
+# :command.function
+gramps_rm_command() {
+  # src/rm_command.sh
+  # shellcheck shell=bash
+
+  # shellcheck disable=SC2154  # `args` is defined in main script
+  file_path="${args[file_path]}"
+  file_name="$(basename "${file_path}")"
+  repo_dir="$(dirname "${file_path}")"
+
+  test -e "${file_path}" || panic "Does not exist: ${file_path}"
+  test "$(basename "${repo_dir}")" != ".gramps" || panic "Unable to remove files in .gramps directory."
+  test "${file_name}" != ".gramps" || panic "Unable to remove .gramps directory."
+  test -f "${repo_dir}/.gramps/sha256sum" || panic "Not a gramps repository: ${repo_dir}"
+
+  rm "${file_path}"
+
+  get_filtered_checksums() {
+      grep --fixed-strings --word-regexp --invert-match "${file_name}" "${repo_dir}/.gramps/sha256sum"
+  }
+
+  get_filtered_checksums > "${repo_dir}/.gramps/sha256sum.tmp"
+  mv "${repo_dir}/.gramps/sha256sum.tmp" "${repo_dir}/.gramps/sha256sum"
+
+}
+
 # :command.parse_requirements
 parse_requirements() {
   # :command.fixed_flags_filter
@@ -716,6 +780,13 @@ parse_requirements() {
       action="export"
       shift
       gramps_export_parse_requirements "$@"
+      shift $#
+      ;;
+
+    rm)
+      action="rm"
+      shift
+      gramps_rm_parse_requirements "$@"
       shift $#
       ;;
 
@@ -1079,9 +1150,65 @@ gramps_export_parse_requirements() {
 
 }
 
+# :command.parse_requirements
+gramps_rm_parse_requirements() {
+  # :command.fixed_flags_filter
+  while [[ $# -gt 0 ]]; do
+    case "${1:-}" in
+      --help | -h)
+        long_usage=yes
+        gramps_rm_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  # :command.command_filter
+  action="rm"
+
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+        # :command.parse_requirements_case
+        # :command.parse_requirements_case_simple
+        if [[ -z ${args['file_path']+x} ]]; then
+
+          args['file_path']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
+
+        ;;
+
+    esac
+  done
+
+  # :command.required_args_filter
+  if [[ -z ${args['file_path']+x} ]]; then
+    printf "missing required argument: FILE_PATH\nusage: gramps rm FILE_PATH\n" >&2
+    exit 1
+  fi
+
+}
+
 # :command.initialize
 initialize() {
-  version="0.2.1"
+  version="0.3.0"
   long_usage=''
   set -Eeuo pipefail
 
@@ -1102,6 +1229,7 @@ run() {
     "decrypt") gramps_decrypt_command ;;
     "check") gramps_check_command ;;
     "export") gramps_export_command ;;
+    "rm") gramps_rm_command ;;
   esac
 }
 
