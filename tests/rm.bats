@@ -62,3 +62,9 @@ source tests/util.sh
     assert_stderr '^FATAL: Not a gramps repository: not_a_gramps_repo$'
     assert_exit_code 1
 }
+
+@test "rm - README - succeeds" {
+    gramps init . > /dev/null
+    gramps rm README.md
+    test ! -f README.md || fail "README.md wasn't deleted."
+}
