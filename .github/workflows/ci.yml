@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ "**" ]
+  schedule:
+    - cron: "17 3 * * 6"  # every Saturday at 03:17 UTC   https://crontab.guru/#17_3_*_*_6
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: earthly/actions-setup@v1
+      with:
+        version: ^0.8.0
+    - name: Lint / Test / Build
+      run: earthly --ci +all
