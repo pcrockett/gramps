@@ -32,7 +32,6 @@ COPY . .
 SAVE IMAGE gramps-ci:latest
 
 all:
-    BUILD +build
     BUILD +lint
     BUILD +test
 
@@ -41,9 +40,9 @@ build:
     SAVE ARTIFACT gramps AS LOCAL gramps
 
 lint:
-    COPY +build/gramps .
+    FROM +build
     RUN make lint
 
 test:
-    COPY +build/gramps .
+    FROM +build
     RUN make test
