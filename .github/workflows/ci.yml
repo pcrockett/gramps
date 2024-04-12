@@ -2,10 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [ main ]
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ main ]
   schedule:
     - cron: "17 3 * * 6"  # every Saturday at 03:17 UTC   https://crontab.guru/#17_3_*_*_6
 
