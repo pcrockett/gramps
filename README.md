@@ -127,7 +127,9 @@ sha256sum --check ./backup_2023-12-01-1658.zip.sha256sum
 _official Linux support only._ PRs welcome for other OSes.
 
 * install [age](https://github.com/FiloSottile/age)
-* drop the [gramps script](./gramps) into a bin directory on your `PATH`
+* [download the gramps script](https://github.com/pcrockett/gramps/releases/latest/download/gramps)
+    into a bin directory on your `PATH`
+* `chmod +x gramps`
 
 ### contributing
 
