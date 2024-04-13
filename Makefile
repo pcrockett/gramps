@@ -17,5 +17,9 @@ install: gramps
 	@cp gramps ~/.local/bin
 .PHONY: install
 
+release:
+	@gh workflow run release.yml
+.PHONY: release
+
 gramps: settings.yml src/bashly.yml src/*.sh src/lib/*.sh
 	@bashly generate

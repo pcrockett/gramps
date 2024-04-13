@@ -5,7 +5,8 @@ RUN useradd --create-home ci_user && \
 mkdir /repo && \
 chown -R ci_user:ci_user /repo && \
 apt-get update && \
-apt-get install --yes --no-install-recommends curl ca-certificates git libyaml-dev xz-utils zip make && \
+apt-get install --yes --no-install-recommends \
+    curl ca-certificates git libyaml-dev xz-utils zip make && \
 apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER ci_user
@@ -25,8 +26,6 @@ COPY .tool-versions .
 RUN asdf install
 
 COPY . .
-
-SAVE IMAGE gramps-ci:latest
 
 all:
     BUILD +lint
