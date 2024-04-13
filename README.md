@@ -133,8 +133,22 @@ _official Linux support only._ PRs welcome for other OSes.
 
 _PRs, suggestions, and issues welcome._
 
-this project uses [bashly](https://bashly.dannyb.co/) to build the script,
-[shellcheck](https://github.com/koalaman/shellcheck/) for linting, and
-[bats](https://github.com/bats-core/bats-core) for tests.
+this project uses [earthly](https://earthly.dev/) for CI / CD. this means you can run the full CI
+process on your dev machine as long as you have docker and the [earthly CLI](https://earthly.dev/get-earthly)
+installed. just run:
 
-if `make` runs, you're ready for some dev work.
+```bash
+earthly +all
+```
+
+if you want to do more active development, the [Makefile](Makefile) is faster and more convenient
+than the [Earthfile](Earthfile), though it requires actually installing the following dependencies
+on your machine:
+
+* [age](https://github.com/FiloSottile/age)
+* [bashly](https://bashly.dannyb.co/)
+* [shellcheck](https://github.com/koalaman/shellcheck/)
+* [bats](https://github.com/bats-core/bats-core)
+
+if you use [asdf](https://asdf-vm.com/) to manage tool versions, you can just install the plugins
+mentioned in [.tool-versions](.tool-versions) and run `asdf install`.
