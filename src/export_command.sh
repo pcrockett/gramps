@@ -1,6 +1,7 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2154  # variables like ${repository_path} are defined in main script
 
+require_cmd zip sha256sum
 set_repo_path_arg from_option
 test -d "${repository_path}/.gramps" || panic "Not a gramps repository: ${repository_path}"
 

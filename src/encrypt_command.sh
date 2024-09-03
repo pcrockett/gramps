@@ -2,6 +2,8 @@
 
 # shellcheck disable=SC2154  # variables like ${args} are defined in main script
 
+require_cmd age sha256sum
+
 set_repo_path_arg from_option
 
 out_file_name="${args["--filename"]:-}" 

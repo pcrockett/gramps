@@ -1,5 +1,7 @@
 # shellcheck shell=bash
 
+require_cmd age
+
 # shellcheck disable=SC2154  # variables like ${args} are defined in main script
 input_path="${args[input_path]}"
 test -f "${input_path}" || panic "File not found: ${input_path}"
