@@ -6,7 +6,7 @@ mkdir /repo && \
 chown -R ci_user:ci_user /repo && \
 apt-get update && \
 apt-get install --yes --no-install-recommends \
-    curl ca-certificates git libyaml-dev xz-utils zip make && \
+    curl ca-certificates git libyaml-dev xz-utils zip make build-essential && \
 apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER ci_user
