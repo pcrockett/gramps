@@ -1,8 +1,7 @@
 all: build lint test
 .PHONY: all
 
-build:
-	@bashly generate
+build: gramps
 .PHONY: build
 
 lint: gramps
@@ -12,6 +11,15 @@ lint: gramps
 test: gramps
 	@bats tests
 .PHONY: test
+
+docker-ci:
+	@rm -f gramps
+	@docker container rm gramps-ci || true
+	@docker build --tag gramps-ci .
+	@docker run --name gramps-ci gramps-ci make all
+	@docker cp gramps-ci:/repo/gramps .
+	@docker container rm gramps-ci
+.PHONY: docker-ci
 
 install: gramps
 	@cp gramps ~/.local/bin

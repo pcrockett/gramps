@@ -24,11 +24,8 @@ init() {
 }
 
 run_ci() {
-    rm -f gramps
-    earthly +build
+    make docker-ci
     test -f gramps || panic "CI didn't generate a new gramps executable"
-    earthly +lint
-    earthly +test
 }
 
 create_release() {

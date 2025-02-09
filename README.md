@@ -1,61 +1,67 @@
 ## gramps 👴
 
-a simple, pseudo-offline backup tool using [age](https://github.com/FiloSottile/age) encryption.
+a simple, pseudo-offline backup tool using [age](https://github.com/FiloSottile/age)
+encryption.
 
-to be clear, _gramps_ isn't so much of a _backup_ program, per say. it's more of a really
-easy-to-use encryption tool that was built to safeguard especially sensitive data that you would
-otherwise want to keep backed up completely offline (think MFA recovery codes or password vault
-backups). it gives you a kind of _pseudo_-offline backup.
+to be clear, _gramps_ isn't so much of a _backup_ program, per say. it's more of a
+really easy-to-use encryption tool that was built to safeguard especially sensitive data
+that you would otherwise want to keep backed up completely offline (think MFA recovery
+codes or password vault backups). it gives you a kind of _pseudo_-offline backup.
 
 _disclaimer: gramps is suitable for MFA recovery codes, not nuclear launch codes._
 
 ### _pseudo_-offline?
 
-_gramps_ is really just a simple way to generate a public / private key pair where the private key
-is written down on paper and the public key stays on whatever device(s) you own. this makes it
-super easy to encrypt information such that it can only be decrypted with your offline private key.
+_gramps_ is really just a simple way to generate a public / private key pair where the
+private key is written down on paper and the public key stays on whatever device(s) you
+own. this makes it super easy to encrypt information such that it can only be decrypted
+with your offline private key.
 
-in other words, it gives you a backup that is super easy to add to (and maintain) over time, but
-then requires a person to have physical access to a piece of paper if they want to actually get any
-data out of it.
+in other words, it gives you a backup that is super easy to add to (and maintain) over
+time, but then requires a person to have physical access to a piece of paper if they
+want to actually get any data out of it.
 
-so yes, your _encrypted_ data remains technically online, but it achieves _almost_ the same security
-benefits as a completely offline backup.
+so yes, your _encrypted_ data remains technically online, but it achieves _almost_ the
+same security benefits as a completely offline backup.
 
 <details>
 <summary>
-<em>"if you need offline backups, why don't you just make your backups <strong>fully</strong> offline?"</em>
+<em>"if you need offline backups, why don't you just make your backups
+<strong>fully</strong> offline?"</em>
 </summary>
 <br>
 
 there are a few reasons to avoid normal 100% offline backups. off the top of my head:
 
-1. "offline" in this sense usually means "on an air-gapped or powered-off device." these devices
-    require maintenance and regular checks to make sure they're still working or their storage
-    isn't corrupted. _and you can't easily automate those tasks._ you have to depend on unreliable
-    human meat bags to do that regular maintenance.
-2. fully-offline backup data is hard to keep up-to-date. you _know_ your future self will rarely
-    find the time to deal with the hassle of updating a fully-offline backup. there's not much point
-    in restoring an offline backup when the information it contains is no longer relevant.
+1. "offline" in this sense usually means "on an air-gapped or powered-off device." these
+   devices require maintenance and regular checks to make sure they're still working or
+   their storage isn't corrupted. _and you can't easily automate those tasks._ you have
+   to depend on unreliable human meat bags to do that regular maintenance.
+2. fully-offline backup data is hard to keep up-to-date. you _know_ your future self
+   will rarely find the time to deal with the hassle of updating a fully-offline
+   backup. there's not much point in restoring an offline backup when the information it
+   contains is no longer relevant.
 
-on the other hand, if the only offline bit of data is your decryption key on a piece of paper,
-maintenance isn't any more difficult than regular run-of-the-mill backup maintenance. testing your
-offline-ish backup looks the same as testing an online backup, with the additional step of going to
-your sock drawer to dig out your private key, and entering it into the terminal to make sure it
-still decrypts your files, which is probably about 2 minutes of additional effort.
+on the other hand, if the only offline bit of data is your decryption key on a piece
+of paper, maintenance isn't any more difficult than regular run-of-the-mill backup
+maintenance. testing your offline-ish backup looks the same as testing an online backup,
+with the additional step of going to your sock drawer to dig out your private key,
+and entering it into the terminal to make sure it still decrypts your files, which is
+probably about 2 minutes of additional effort.
 </details>
 
 <details>
 <summary>
-<em>"this is a bad idea; someone will find a flaw in the way age does encryption, and then your backups will be compromised."</em>
+<em>"this is a bad idea; someone will find a flaw in the way age does encryption, and
+then your backups will be compromised."</em>
 </summary>
 <br>
 
-yup. this isn't about keeping your data confidential _forever_. it's about adding a layer of
-security to more sensitive stuff that will _probably_ be effective for the next few years. if
-you're afraid someone will keep your data around until the encryption is broken, you should do some
-things like rotate your MFA recovery codes and change your passwords. then create a new backup with
-more advanced cryptography.
+yup. this isn't about keeping your data confidential _forever_. it's about adding a
+layer of security to more sensitive stuff that will _probably_ be effective for the next
+few years. if you're afraid someone will keep your data around until the encryption is
+broken, you should do some things like rotate your MFA recovery codes and change your
+passwords. then create a new backup with more advanced cryptography.
 
 </details>
 
@@ -92,8 +98,8 @@ gramps encrypt --filename bitwarden-mfa-secret.txt
 # File saved at /home/phil/backup/bitwarden-mfa-secret.txt.age
 ```
 
-[bit rot](https://en.wikipedia.org/wiki/Data_degradation) happens; if your file system doesn't
-detect corruption, it's a good idea to run `gramps check` on a regular basis:
+[bit rot](https://en.wikipedia.org/wiki/Data_degradation) happens; if your file system
+doesn't detect corruption, it's a good idea to run `gramps check` on a regular basis:
 
 ```bash
 gramps check
@@ -111,8 +117,9 @@ gramps decrypt ~/backup/bitwarden-vault-export.json.age ./bitwarden-vault-export
 # File saved at ./bitwarden-vault-export.json
 ```
 
-it's ideal if your _gramps_ repo is automatically backed up. however if you just want to throw it
-on a cloud drive of some sort, you can export your _gramps_ repo to zip file along with a checksum.
+it's ideal if your _gramps_ repo is automatically backed up. however if you just want
+to throw it on a cloud drive of some sort, you can export your _gramps_ repo to zip file
+along with a checksum.
 
 ```bash
 gramps export .
@@ -135,22 +142,21 @@ _official Linux support only._ PRs welcome for other OSes.
 
 _PRs, suggestions, and issues welcome._
 
-this project uses [earthly](https://earthly.dev/) for CI / CD. this means you can run the full CI
-process on your dev machine as long as you have docker and the [earthly CLI](https://earthly.dev/get-earthly)
-installed. just run:
+this project uses docker for CI / CD. this means you can run the full CI process on your
+dev machine as long as you have docker installed. just run:
 
 ```bash
-earthly +all
+make docker-ci
 ```
 
-if you want to do more active development, the [Makefile](Makefile) is faster and more convenient
-than the [Earthfile](Earthfile), though it requires actually installing the following dependencies
-on your machine:
+if you want to do more active development, the [Makefile](Makefile) contains individual
+CI steps that are more granular, though it requires actually installing the following
+dependencies on your machine:
 
 * [age](https://github.com/FiloSottile/age)
 * [bashly](https://bashly.dannyb.co/)
 * [shellcheck](https://github.com/koalaman/shellcheck/)
 * [bats](https://github.com/bats-core/bats-core)
 
-if you use [asdf](https://asdf-vm.com/) to manage tool versions, you can just install the plugins
-mentioned in [.tool-versions](.tool-versions) and run `asdf install`.
+if you use [asdf](https://asdf-vm.com/) to manage tool versions, you can just install
+the plugins mentioned in [.tool-versions](.tool-versions) and run `asdf install`.

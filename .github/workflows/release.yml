@@ -11,9 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: earthly/actions-setup@v1
-      with:
-        version: ^0.8.0
     - name: Install fx
       run: |
         curl -SsfL https://philcrockett.com/yolo/v1.sh \
