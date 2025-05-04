@@ -21,5 +21,14 @@ release:
 	@gh workflow run release.yml
 .PHONY: release
 
+ci:
+	@rm --force gramps
+	@docker build --tag gramps-ci .
+	@docker container rm --force gramps-ci &>/dev/null
+	@docker run --name gramps-ci gramps-ci /bin/bash -c make build lint test
+	@docker cp gramps-ci:/repo/gramps .
+	@docker container rm --force gramps-ci &>/dev/null
+	@test -f gramps
+
 gramps: settings.yml src/bashly.yml src/*.sh src/lib/*.sh
 	@bashly generate

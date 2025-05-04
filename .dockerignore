@@ -1,11 +1,10 @@
-*.sublime-*
 .dockerignore
-.earthlyignore
 .envrc*
 .git/
 .github/
 .gitignore
-Earthfile
+.helix/
+Dockerfile
 LICENSE
 README.md
 scripts/
