@@ -14,11 +14,12 @@ test: gramps
 
 docker-ci:
 	@rm -f gramps
-	@docker container rm gramps-ci || true
+	@docker container rm --force gramps-ci &>/dev/null
 	@docker build --tag gramps-ci .
 	@docker run --name gramps-ci gramps-ci make all
 	@docker cp gramps-ci:/repo/gramps .
-	@docker container rm gramps-ci
+	@docker container rm gramps-ci &>/dev/null
+	@test -f gramps
 .PHONY: docker-ci
 
 install: gramps

@@ -149,9 +149,9 @@ dev machine as long as you have docker installed. just run:
 make docker-ci
 ```
 
-if you want to do more active development, the [Makefile](Makefile) contains individual
-CI steps that are more granular, though it requires actually installing the following
-dependencies on your machine:
+if you want to do more active development, the [Makefile](./Makefile) contains
+individual CI steps that are more granular, though it requires actually installing the
+following dependencies on your machine:
 
 * [age](https://github.com/FiloSottile/age)
 * [bashly](https://bashly.dannyb.co/)
@@ -159,4 +159,4 @@ dependencies on your machine:
 * [bats](https://github.com/bats-core/bats-core)
 
 if you use [asdf](https://asdf-vm.com/) to manage tool versions, you can just install
-the plugins mentioned in [.tool-versions](.tool-versions) and run `asdf install`.
+the plugins mentioned in [.tool-versions](./.tool-versions) and run `asdf install`.

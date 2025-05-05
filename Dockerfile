@@ -1,4 +1,4 @@
-FROM docker.io/library/ruby:3.3-slim-bookworm AS base
+FROM docker.io/library/ruby:3.4-slim-bookworm AS base
 SHELL ["/bin/bash", "-Eeuo", "pipefail", "-c"]
 
 RUN useradd --create-home ci_user && \
@@ -35,12 +35,3 @@ ENTRYPOINT ["/bin/bash", "-c"]
 
 FROM base AS ci
 COPY . .
-
-# FROM ci-base AS builder
-# CMD ["make", "build"]
-
-# FROM ci-base AS linter
-# CMD ["make", "lint"]
-
-# FROM ci-base AS tester
-# CMD ["make", "test"]
