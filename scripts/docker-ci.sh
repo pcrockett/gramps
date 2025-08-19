@@ -7,6 +7,10 @@ GRAMPS_CI_CONTAINER_NAME="${GRAMPS_CI_CONTAINER_NAME:-"gramps-ci"}"
 init() {
     rm -f gramps
     docker container rm --force "${GRAMPS_CI_CONTAINER_NAME}" &>/dev/null
+
+    if [ "${GITHUB_TOKEN:-}" = "" ] && command -v gh &>/dev/null && gh auth status &>/dev/null; then
+        GITHUB_TOKEN="$(gh auth token)"
+    fi
 }
 
 main() {
