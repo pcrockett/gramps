@@ -1,5 +1,6 @@
 FROM docker.io/library/ruby:3.4-slim-bookworm AS base
 SHELL ["/bin/bash", "-Eeuo", "pipefail", "-c"]
+ARG GITHUB_TOKEN
 
 RUN useradd --create-home ci_user && \
 mkdir /repo && \
