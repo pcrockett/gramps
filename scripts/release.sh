@@ -37,9 +37,10 @@ create_release() {
 main() {
     init
     run_ci
-    local tag url
-    tag="v$(fx src/bashly.yml '.version')"
-    url="$(create_release "${tag}")"
+    local tag url version
+    version="$(fx src/bashly.yml '.version')"
+    test "${version}" != "" || panic "empty version string?"
+    url="$(create_release "v${version}")"
     echo "new release created: ${url}"
 }
 
