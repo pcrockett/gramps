@@ -1,5 +1,5 @@
-FROM docker.io/library/ruby:3.4-slim-bookworm AS base
-SHELL ["/bin/bash", "-Eeuo", "pipefail", "-c"]
+FROM docker.io/library/ruby:4.0-slim-trixie AS base
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 ARG GITHUB_TOKEN
 
 RUN useradd --create-home ci_user && \
@@ -18,7 +18,7 @@ ENV PATH="${ASDF_DATA_DIR}/shims:${HOME}/.local/bin:${PATH}"
 RUN \
 git config --global advice.detachedHead false && \
 mkdir -p "${ASDF_DATA_DIR}" "${HOME}/.local/bin" && \
-curl -SsfL https://philcrockett.com/yolo/v1.sh \
+curl -SsfL https://philcrockett.com/yolo/v2.sh \
     | bash -s -- asdf
 
 RUN \
