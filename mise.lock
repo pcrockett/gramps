@@ -69,20 +69,20 @@ url = "https://github.com/antonmedv/fx/releases/download/40.0.1/fx_linux_amd64"
 url_api = "https://api.github.com/repos/antonmedv/fx/releases/assets/666017503"
 
 [[tools."github:pcrockett/bashly-dist"]]
-version = "1.4.0"
+version = "2.0.0"
 backend = "github:pcrockett/bashly-dist"
-specifiers = ["1.4.0"]
+specifiers = ["2.0.0"]
 
 [tools."github:pcrockett/bashly-dist"."platforms.linux-x64"]
-checksum = "sha256:7e48ac27468d35e4778f11678752f41980b5f4feaa9b7d17978bb3cf1ca8658a"
-url = "https://github.com/pcrockett/bashly-dist/releases/download/v1.4.0/bashly-1.4.0-linux-x64.tar.gz"
-url_api = "https://api.github.com/repos/pcrockett/bashly-dist/releases/assets/701027755"
+checksum = "sha256:6ce9c7d4e6e6d9eeb3e8664ae1f9af0eeca849f35cecd703a3627159b5b8c00f"
+url = "https://github.com/pcrockett/bashly-dist/releases/download/v2.0.0/bashly-2.0.0-linux-x64.tar.gz"
+url_api = "https://api.github.com/repos/pcrockett/bashly-dist/releases/assets/701040707"
 provenance = "github-attestations"
 
 [tools."github:pcrockett/bashly-dist"."platforms.linux-x64-musl"]
-checksum = "sha256:d2796ed47370388d942c4284558c00961f03dc226b2ba9841522ca5334421442"
-url = "https://github.com/pcrockett/bashly-dist/releases/download/v1.4.0/bashly-1.4.0-linux-x64-musl.tar.gz"
-url_api = "https://api.github.com/repos/pcrockett/bashly-dist/releases/assets/701027757"
+checksum = "sha256:587b5de3799ebdb67abf231d02ca4bcc6d22d43f6afbd14e1cac9f4b229ab852"
+url = "https://github.com/pcrockett/bashly-dist/releases/download/v2.0.0/bashly-2.0.0-linux-x64-musl.tar.gz"
+url_api = "https://api.github.com/repos/pcrockett/bashly-dist/releases/assets/701040705"
 provenance = "github-attestations"
 
 [[tools."github:stepchowfun/tagref"]]

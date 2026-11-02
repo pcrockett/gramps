@@ -1,6 +1,6 @@
 [tools]
 "github:stepchowfun/tagref" = "latest"
-"github:pcrockett/bashly-dist" = "1.4.0"
+"github:pcrockett/bashly-dist" = "2.0.0"
 actionlint = "latest"
 age = "latest"
 bats = "latest"
