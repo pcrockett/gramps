@@ -6,7 +6,7 @@ require_cmd age sha256sum
 
 set_repo_path_arg from_option
 
-out_file_name="${args["--filename"]:-}" 
+out_file_name="${args["--filename"]:-}"
 
 input_path="${args[input_path]:-}"
 if [ "${input_path}" == "" ]; then
@@ -44,7 +44,7 @@ mv "${output_path}.tmp" "${output_path}"
 
 (
     cd "${repository_path}" || panic "unable to cd into ${repository_path}"
-    sha256sum "$(basename "${output_path}")" >> .gramps/sha256sum
+    sha256sum "$(basename "${output_path}")" >>.gramps/sha256sum
 )
 
 echo "File saved at ${output_path}"

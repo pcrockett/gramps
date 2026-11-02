@@ -1,7 +1,6 @@
 name: gramps
 help: Pseudo-offline encrypted backup tool
 version: 0.3.4
-
 commands:
   - name: init
     help: Initialize a new repository with a key pair and display the private key
@@ -9,7 +8,6 @@ commands:
       - name: repository_path
         required: false
         help: Repository directory path. Defaults to `GRAMPS_DEFAULT_REPO` env variable.
-
   - name: encrypt
     help: Encrypt a file using the repository's public key
     args:
@@ -27,7 +25,6 @@ commands:
         arg: file_name
         help: Name of the ciphertext file in the repository. `.age` will be appended to it. Only necessary if INPUT_PATH isn't specified.
         required: false
-
   - name: decrypt
     help: Decrypt a file using a repository's offline private key
     args:
@@ -37,14 +34,12 @@ commands:
       - name: output_path
         required: false
         help: Path where you want to save the decrypted file (or stdout if not specified)
-
   - name: check
     help: Check file integrity
     args:
       - name: repository_path
         required: false
         help: Repository directory path. Defaults to `GRAMPS_DEFAULT_REPO` env variable.
-
   - name: export
     help: Export a repository to zip file
     args:
@@ -61,14 +56,12 @@ commands:
         arg: file_name
         help: Name of the output zip file. Defaults to the name of the repository with timestamp.
         required: false
-
   - name: rm
     help: Remove a file from a repository
     args:
       - name: file_path
         required: true
         help: Path to the file you want to delete
-
 environment_variables:
   - name: gramps_default_repo
     help: If no gramps repo is specified in a command, defaults to this path

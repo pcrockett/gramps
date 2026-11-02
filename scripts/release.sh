@@ -24,7 +24,7 @@ init() {
 }
 
 run_ci() {
-    make docker-ci
+    make
     test -f gramps || panic "CI didn't generate a new gramps executable"
 }
 

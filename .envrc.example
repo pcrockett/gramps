@@ -1,3 +1,0 @@
-# shellcheck shell=bash
-strict_env
-use asdf

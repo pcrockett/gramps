@@ -22,7 +22,7 @@ on_exit() {
 }
 trap 'on_exit' EXIT
 
-pushd "${repository_path}" &> /dev/null || panic "unable to cd to ${repository_path}"
+pushd "${repository_path}" &>/dev/null || panic "unable to cd to ${repository_path}"
 
 zip_path="${workspace}/${file_name}"
 
@@ -30,9 +30,9 @@ zip_path="${workspace}/${file_name}"
 zip --quiet --recurse-paths "${zip_path}" .
 
 cd "${workspace}" || panic "unable to cd to ${workspace}"
-sha256sum "${file_name}" > "${file_name}.sha256sum"
+sha256sum "${file_name}" >"${file_name}.sha256sum"
 
-popd &> /dev/null || panic "unable to cd back to original directory"
+popd &>/dev/null || panic "unable to cd back to original directory"
 
 mv "${zip_path}" "${output_directory}"
 mv "${zip_path}.sha256sum" "${output_directory}"

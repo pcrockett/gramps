@@ -14,7 +14,7 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
 -----END AGE ENCRYPTED FILE-----'
 
 @test "decrypt - improperly formatted key - fails" {
-    echo "${ENCRYPTED_CONTENTS}" > foo.txt.age
+    echo "${ENCRYPTED_CONTENTS}" >foo.txt.age
     capture_output gramps decrypt foo.txt.age \
         < <(echo "this is a bad key")
     assert_no_stdout
@@ -23,7 +23,7 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
 }
 
 @test "decrypt - valid but wrong key - fails" {
-    echo "${ENCRYPTED_CONTENTS}" > foo.txt.age
+    echo "${ENCRYPTED_CONTENTS}" >foo.txt.age
     capture_output gramps decrypt foo.txt.age \
         < <(echo '01QSPPLGWHQKDWR7HA37KNT0TS0QWLMFDA0LUD8N2W92LCDHF7ALVQ8CQJ04')
     assert_no_stdout
@@ -32,7 +32,7 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
 }
 
 @test "decrypt - wrong key version - fails" {
-    echo "${ENCRYPTED_CONTENTS}" > foo.txt.age
+    echo "${ENCRYPTED_CONTENTS}" >foo.txt.age
     capture_output gramps decrypt foo.txt.age \
         < <(echo '02QSPPLGWHQKDWR7HA37KNT0TS0QWLMFDA0LUD8N2W92LCDHF7ALVQ8CQJ04')
     assert_no_stdout
@@ -43,7 +43,7 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
 @test "decrypt - uninitialized input dir - succeeds" {
     # right now there's no reason for gramps to fail when decrypting something with the private key,
     # EVEN THOUGH the file we're decrypting isn't in a valid gramps repository.
-    echo "${ENCRYPTED_CONTENTS}" > foo.txt.age
+    echo "${ENCRYPTED_CONTENTS}" >foo.txt.age
     capture_output gramps decrypt foo.txt.age \
         < <(echo "${DUMMY_PRIVATE_KEY}")
     assert_no_stderr
@@ -52,7 +52,7 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
 }
 
 @test "decrypt - lowercase private key - succeeds" {
-    echo "${ENCRYPTED_CONTENTS}" > foo.txt.age
+    echo "${ENCRYPTED_CONTENTS}" >foo.txt.age
     capture_output gramps decrypt foo.txt.age \
         < <(echo '01wcvp648udc5n82cdpwa8zz6xdel74ymr5fdj95n8hhzsz8yvf0mq90gq8e')
     assert_no_stderr
@@ -61,7 +61,7 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
 }
 
 @test "decrypt - output file specified - succeeds" {
-    echo "${ENCRYPTED_CONTENTS}" > foo.txt.age
+    echo "${ENCRYPTED_CONTENTS}" >foo.txt.age
     capture_output gramps decrypt foo.txt.age foo.txt \
         < <(echo "${DUMMY_PRIVATE_KEY}")
     assert_no_stderr
@@ -77,7 +77,7 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
 }
 
 @test "decrypt - output file already exists - fails" {
-    echo "${ENCRYPTED_CONTENTS}" > foo.txt.age
+    echo "${ENCRYPTED_CONTENTS}" >foo.txt.age
     touch ./foo.txt
     capture_output gramps decrypt ./foo.txt.age ./foo.txt < <(echo "${DUMMY_PRIVATE_KEY}")
     assert_no_stdout
@@ -87,7 +87,7 @@ bW1BczhvOEg1QnNxQUtsZXZQajF4K1UK0VFieU4eXQgIbNtQVGTdI83oJvqNDl1y
 
 @test "decrypt - output file is a directory - fails" {
     mkdir ./foo
-    echo "${ENCRYPTED_CONTENTS}" > ./foo.txt.age
+    echo "${ENCRYPTED_CONTENTS}" >./foo.txt.age
     capture_output gramps decrypt ./foo.txt.age ./foo < <(echo "${DUMMY_PRIVATE_KEY}")
     assert_no_stdout
     assert_stderr '^FATAL: Already exists: \./foo$'

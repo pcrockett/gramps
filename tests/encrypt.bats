@@ -10,7 +10,7 @@ source tests/util.sh
 }
 
 @test "encrypt - uninitialized output dir - fails" {
-    echo "foo" > "${HOME}/foo.txt"
+    echo "foo" >"${HOME}/foo.txt"
     capture_output gramps encrypt "${HOME}/foo.txt" --repo .
     assert_exit_code 1
     assert_no_stdout
@@ -18,7 +18,7 @@ source tests/util.sh
 }
 
 @test "encrypt - input file doesnt exist - fails" {
-    gramps init . &> /dev/null
+    gramps init . &>/dev/null
     capture_output gramps encrypt "${HOME}/foo.txt" --repo .
     assert_exit_code 1
     assert_no_stdout
@@ -26,7 +26,7 @@ source tests/util.sh
 }
 
 @test "encrypt - output file already exists - fails" {
-    gramps init . &> /dev/null
+    gramps init . &>/dev/null
     touch ./foo.txt.age
     capture_output gramps encrypt --repo . --filename foo.txt < <(echo "foo")
     assert_no_stdout
@@ -35,7 +35,7 @@ source tests/util.sh
 }
 
 @test "encrypt - output file is a directory - fails" {
-    gramps init . &> /dev/null
+    gramps init . &>/dev/null
     mkdir ./foo.txt.age
     capture_output gramps encrypt --repo . --filename ./foo.txt < <(echo "foo")
     assert_no_stdout
@@ -44,7 +44,7 @@ source tests/util.sh
 }
 
 @test "encrypt - stdin to initialized output dir - succeeds" {
-    gramps init . &> /dev/null
+    gramps init . &>/dev/null
     capture_output gramps encrypt --repo . --filename foo.txt < <(echo "foo")
     assert_no_stderr
     assert_stdout '^File saved at /tmp/gramps-test\.\w+/foo\.txt\.age$'
@@ -55,8 +55,8 @@ source tests/util.sh
 }
 
 @test "encrypt - input file to initialized output dir - succeeds" {
-    gramps init . &> /dev/null
-    echo "foo" > "${HOME}/foo.txt"
+    gramps init . &>/dev/null
+    echo "foo" >"${HOME}/foo.txt"
     capture_output gramps encrypt "${HOME}/foo.txt" --repo .
     assert_stdout '^File saved at /tmp/gramps-test\.\w+/foo\.txt\.age$'
     assert_no_stderr
@@ -67,7 +67,7 @@ source tests/util.sh
 }
 
 @test "encrypt - single successful encryption - checksum added" {
-    gramps init . &> /dev/null
+    gramps init . &>/dev/null
     echo "foo" | gramps encrypt --repo . --filename foo.txt
     capture_output sha256sum --check .gramps/sha256sum
     assert_stdout "foo.txt.age: OK"
@@ -76,7 +76,7 @@ source tests/util.sh
 }
 
 @test "encrypt - many successful encryptions - checksum added" {
-    gramps init . &> /dev/null
+    gramps init . &>/dev/null
     echo "foo" | gramps encrypt --repo . --filename foo.txt
     echo "foo2" | gramps encrypt --repo . --filename foo2.txt
     capture_output sha256sum --check .gramps/sha256sum
@@ -87,7 +87,7 @@ foo2.txt.age: OK"
 }
 
 @test "encrypt - stdin with no filename - fails" {
-    gramps init . &> /dev/null
+    gramps init . &>/dev/null
     capture_output gramps encrypt --repo . < <(echo "foo")
     assert_stderr '^FATAL: Must specify --filename flag when no INPUT_PATH is specified\.$'
     assert_no_stdout
@@ -95,8 +95,8 @@ foo2.txt.age: OK"
 }
 
 @test "encrypt - both input_path and filename parameters specified - writes to filename" {
-    gramps init . &> /dev/null
-    echo "foo" > "${HOME}/foo.txt"
+    gramps init . &>/dev/null
+    echo "foo" >"${HOME}/foo.txt"
     capture_output gramps encrypt "${HOME}/foo.txt" --repo . --filename "bar.txt"
     assert_exit_code 0
     assert_stdout '^File saved at /tmp/gramps-test\.\w+/bar\.txt\.age$'
@@ -108,9 +108,9 @@ foo2.txt.age: OK"
 
 @test "encrypt - default repo specified via env variable - saves to correct location" {
     default_repo="$(pwd)"
-    GRAMPS_DEFAULT_REPO="${default_repo}" gramps init &> /dev/null
+    GRAMPS_DEFAULT_REPO="${default_repo}" gramps init &>/dev/null
 
-    echo "foo" > "${HOME}/foo.txt"
+    echo "foo" >"${HOME}/foo.txt"
     GRAMPS_DEFAULT_REPO="${default_repo}" capture_output gramps encrypt "${HOME}/foo.txt"
     assert_exit_code 0
 

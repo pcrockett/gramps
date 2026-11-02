@@ -15,10 +15,10 @@ mkdir -p "${gramps_temp_dir}"
 test ! -d "${gramps_dir}" || panic "Already initialized: ${repository_path}"
 
 private_key="$(
-    age-keygen 2> /dev/null | grep --perl-regexp --only-matching '(?<=^AGE-SECRET-KEY-1).+$'
+    age-keygen 2>/dev/null | grep --perl-regexp --only-matching '(?<=^AGE-SECRET-KEY-1).+$'
 )"
 
-echo "AGE-SECRET-KEY-1${private_key}" | age-keygen -y > "${pubkey_path}"
+echo "AGE-SECRET-KEY-1${private_key}" | age-keygen -y >"${pubkey_path}"
 
 readme_content() {
     echo "# Gramps Pseudo-Offline Backup"
@@ -41,16 +41,16 @@ readme_content() {
 if [ -e "${readme_path}" ]; then
     echo "WARNING: README.md already exists."
 else
-    readme_content > "${readme_path}"
+    readme_content >"${readme_path}"
 fi
 
 # prepend a version number to private key for future-proofing
 private_key="01${private_key}"
 
 # create the checksum file with just the pubkey file in it
-pushd "${repository_path}" &> /dev/null || panic "unable to cd to ${repository_path}"
-sha256sum .gramps.tmp/pubkey | sed 's/.gramps.tmp/.gramps/' > .gramps.tmp/sha256sum
-popd &> /dev/null || panic "unable to cd back to original directory"
+pushd "${repository_path}" &>/dev/null || panic "unable to cd to ${repository_path}"
+sha256sum .gramps.tmp/pubkey | sed 's/.gramps.tmp/.gramps/' >.gramps.tmp/sha256sum
+popd &>/dev/null || panic "unable to cd back to original directory"
 
 mv "${gramps_temp_dir}" "${gramps_dir}"
 

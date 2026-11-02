@@ -39,7 +39,7 @@ age_cmd+=("${input_path}")
 process_stderr() {
     # process `age --decrypt` stderr to improve known error messages.
     age_stderr="$(cat)"
-    if echo "${age_stderr}" | grep --fixed-strings "age: error: no identity matched any of the recipients" &> /dev/null; then
+    if echo "${age_stderr}" | grep --fixed-strings "age: error: no identity matched any of the recipients" &>/dev/null; then
         panic "Unable to decrypt; perhaps a mistyped key?"
     else
         echo "${age_stderr}" >&2

@@ -16,14 +16,14 @@ set_repo_path_arg() {
         from_option)
             arg_name="--repo"
             human_friendly_arg_name="--repo"
-        ;;
+            ;;
         from_positional)
             arg_name="repository_path"
-            human_friendly_arg_name="REPOSITORY_PATH"  # same as what help messages display
-        ;;
+            human_friendly_arg_name="REPOSITORY_PATH" # same as what help messages display
+            ;;
         *)
             panic "expected only from_option or from_positional as parameters"
-        ;;
+            ;;
     esac
 
     repository_path="${args["${arg_name}"]:-}"

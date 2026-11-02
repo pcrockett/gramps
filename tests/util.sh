@@ -6,7 +6,7 @@ setup() {
     TEST_HOME="$(mktemp --directory --tmpdir=/tmp gramps-home.XXXXXX)"
     mkdir -p "${TEST_HOME}/.local/bin"
     cp gramps "${TEST_HOME}/.local/bin"
-    cp .tool-versions "${TEST_CWD}"
+    cp -r mise.toml mise.lock .mise "${TEST_CWD}"
     cd "${TEST_CWD}"
     PATH="${TEST_HOME}/.local/bin:${PATH}"
     export HOME="${TEST_HOME}"
@@ -29,8 +29,8 @@ capture_output() {
     stderr_file="$(mktemp)"
     stdout_file="$(mktemp)"
     capture_exit_code "${@}" \
-        > "${stdout_file}" \
-        2> "${stderr_file}"
+        >"${stdout_file}" \
+        2>"${stderr_file}"
     TEST_STDOUT="$(cat "${stdout_file}")"
     TEST_STDERR="$(cat "${stderr_file}")"
     rm -f "${stdout_file}" "${stderr_file}"

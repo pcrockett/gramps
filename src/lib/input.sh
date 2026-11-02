@@ -14,7 +14,7 @@ prompt_if_interactive() {
     local prompt="${1}"
     shift 1
 
-    if tty &> /dev/null; then
+    if tty &>/dev/null; then
         # an interactive user is at the keyboard. tell them what to do.
         is_tty="true"
         echo "${prompt} Press Ctrl + D when finished." >&2

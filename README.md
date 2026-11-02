@@ -141,22 +141,3 @@ _official Linux support only._ PRs welcome for other OSes.
 ### contributing
 
 _PRs, suggestions, and issues welcome._
-
-this project uses docker for CI / CD. this means you can run the full CI process on your
-dev machine as long as you have docker installed. just run:
-
-```bash
-make docker-ci
-```
-
-if you want to do more active development, the [Makefile](./Makefile) contains
-individual CI steps that are more granular, though it requires actually installing the
-following dependencies on your machine:
-
-* [age](https://github.com/FiloSottile/age)
-* [bashly](https://bashly.dannyb.co/)
-* [shellcheck](https://github.com/koalaman/shellcheck/)
-* [bats](https://github.com/bats-core/bats-core)
-
-if you use [asdf](https://asdf-vm.com/) to manage tool versions, you can just install
-the plugins mentioned in [.tool-versions](./.tool-versions) and run `asdf install`.

@@ -48,7 +48,7 @@ foobar.txt.age: OK"
     echo "foo" | gramps encrypt --repo . --filename foo.txt
     echo "foobar" | gramps encrypt --repo . --filename foobar.txt
 
-    echo "oops, file was modified" >> foo.txt.age
+    echo "oops, file was modified" >>foo.txt.age
 
     capture_output gramps check .
     assert_stdout "^\\.gramps/pubkey: OK

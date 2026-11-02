@@ -44,7 +44,7 @@ When you have the private key, you can decrypt files with the command:
 }
 
 @test "init - README exists - warns" {
-    echo "foo" > README.md
+    echo "foo" >README.md
     capture_output gramps init .
     assert_stdout '^WARNING: README\.md already exists\.'
     assert_no_stderr

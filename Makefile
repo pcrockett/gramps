@@ -5,16 +5,12 @@ build: gramps
 .PHONY: build
 
 lint: gramps
-	@shellcheck ./gramps src/*.sh tests/*.sh tests/*.bats && echo "No lint!"
+	@pre-commit run --all-files
 .PHONY: lint
 
 test: gramps
 	@bats tests
 .PHONY: test
-
-docker-ci:
-	./scripts/docker-ci.sh
-.PHONY: docker-ci
 
 install: gramps
 	@cp gramps ~/.local/bin

@@ -14,6 +14,6 @@ get_filtered_checksums() {
     grep --fixed-strings --word-regexp --invert-match "${file_name}" "${repo_dir}/.gramps/sha256sum"
 }
 
-get_filtered_checksums > "${repo_dir}/.gramps/sha256sum.tmp"
+get_filtered_checksums >"${repo_dir}/.gramps/sha256sum.tmp"
 rm "${file_path}"
 mv "${repo_dir}/.gramps/sha256sum.tmp" "${repo_dir}/.gramps/sha256sum"
