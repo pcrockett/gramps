@@ -139,7 +139,7 @@ url_api = "https://api.github.com/repos/pre-commit/pre-commit/releases/assets/63
 [[tools.ruby]]
 version = "4.0.9"
 backend = "core:ruby"
-specifiers = ["latest"]
+specifiers = ["4.0"]
 
 [tools.ruby.options]
 compile = "false"
